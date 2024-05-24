@@ -1,0 +1,10 @@
+#!node
+
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const rdapValidator  = require("../lib/rdap-validator.js");
+
+rdapValidator.testURL(
+    "https://rdap.publicinterestregistry.org/rdap/domain/icann.org",
+    "domain",
+    "thick-gtld-registry",
+);
