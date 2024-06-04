@@ -1,0 +1,36 @@
+name: Generate pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      pages: write
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: create site directory
+        run: mkdir -p _site
+
+      - name: copy libs
+        run: cp -R lib _site/
+
+      - name: copy page
+        run: cp rdap-validator.html _site/index.html
+
+      - name: configure
+        uses: actions/configure-pages@v4
+
+      - name: upload
+        uses: actions/upload-pages-artifact@v3
+
+      - name: deploy
+        uses: actions/deploy-pages@v4
