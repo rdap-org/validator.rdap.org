@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "xmlhttprequest": "^1.8.0"
   }

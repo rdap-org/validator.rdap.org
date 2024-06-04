@@ -1,10 +1,123 @@
-#!node
+#!/usr/bin/env node
 
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const rdapValidator  = require("../lib/rdap-validator.js");
+/**
+ * start by parsing the command-line arguments
+ */
+let opt = {
+    named: {},
+    positional: [],
+};
 
-rdapValidator.testURL(
-    "https://rdap.publicinterestregistry.org/rdap/domain/icann.org",
-    "domain",
-    "thick-gtld-registry",
-);
+for (var i = 2 ; i < process.argv.length ; i++) {
+    const arg = process.argv[i];
+
+    if ("--" == arg.substr(0, 2)) {
+        if (arg.indexOf("=") >= 0) {
+            opt.named[arg.substr(2, arg.indexOf("=")-2)] = arg.substr(1+arg.indexOf("="));
+
+        } else {
+            opt.named[arg.substr(2)] = true;
+
+        }
+
+    } else {
+        opt.positional.push(arg);
+
+    }
+}
+
+const url           = opt.positional.shift();
+const responseType  = opt.named.type ?? "domain";
+const serverType    = opt.named["server-type"] ?? "thick-gtld-registry";
+
+import rdapValidator  from "../lib/rdap-validator.js";
+import XMLHttpRequest from "xmlhttprequest";
+
+const jsonResultData = {
+    testedURL:              url,
+    expectedResponseType:   responseType,
+    serverType:             serverType,
+    results:                [],
+};
+
+rdapValidator.setXHR(XMLHttpRequest.XMLHttpRequest);
+
+const cliResultCallback = function(result, message, context) {
+
+    if (true !== result && false !== result) {
+        console.log("\x1b[1;33mi\x1b[0m " + message);
+
+    } else {
+        if (result) {
+            if (!opt.named.hasOwnProperty("only-errors")) {
+                console.log("\x1b[1;32m✓\x1b[0m " + message);
+            }
+
+        } else {
+            console.log("\x1b[1;31m✘\x1b[0m " + message);
+
+        }
+    }
+
+    if (!result && context !== undefined) {
+        console.log("\n  "+JSON.stringify(context, null, 2).trimEnd().replaceAll("\n", "\n  ") + "\n");
+    }
+};
+
+const jsonResultCallback = function(result, message, context) {
+    jsonResultData.results.push({
+        result: result,
+        message: message,
+        context: context,
+    });
+};
+
+if (opt.named.json) {
+    rdapValidator.setTestCompleteCallback(function() {
+
+        jsonResultData.errorCount       = jsonResultData.results.filter((r) => false === r.result).length
+        jsonResultData.responseHeaders  = rdapValidator.lastTestedResponseHeaders;
+        jsonResultData.jsonResponse     = rdapValidator.lastTestedResponse;
+
+        console.log(JSON.stringify(jsonResultData, null, 2));
+    });
+
+    rdapValidator.setResultCallback(jsonResultCallback);
+
+} else {
+    rdapValidator.setResultCallback(cliResultCallback);
+
+}
+
+function help(x) {
+    console.log("Usage: " + process.argv[1] + " [OPTIONS] URL");
+    console.log("Options:");
+
+    console.log("  --help               Show this help.");
+
+    console.log("  --only-errors        Only show errors.");
+
+    console.log("  --json               Output result in JSON.");
+
+    console.log("  --type=TYPE          Expected response type, which must be one of:");
+    Object.keys(rdapValidator.responseTypes).forEach((t) => console.log(" ".repeat(25) + "- " + t));
+
+    console.log("  --server-type=TYPE   Server type, which must be one of:");
+    Object.keys(rdapValidator.serverTypes).forEach((t) => console.log(" ".repeat(25) + "- " + t));
+
+    console.log("");
+    console.log("Copyright 2024 Gavin Brown <https://about.rdap.org>.");
+
+    process.exit(x);
+}
+
+if (opt.named.hasOwnProperty("help")) {
+    help(0);
+
+} else {
+    rdapValidator.testURL(
+        url,
+        responseType,
+        serverType,
+    );
+}
