@@ -28,7 +28,7 @@ for (var i = 2 ; i < process.argv.length ; i++) {
 
 const url           = opt.positional.shift();
 const responseType  = opt.named.type ?? "domain";
-const serverType    = opt.named["server-type"] ?? "thick-gtld-registry";
+const serverType    = opt.named["server-type"] ?? "vanilla";
 
 import rdapValidator  from "../lib/rdap-validator.js";
 import XMLHttpRequest from "xmlhttprequest";
@@ -42,33 +42,39 @@ const jsonResultData = {
 
 rdapValidator.setXHR(XMLHttpRequest.XMLHttpRequest);
 
-const cliResultCallback = function(result, message, context) {
+let lastPath = null;
 
-    if (true !== result && false !== result) {
-        console.log("\x1b[1;33mi\x1b[0m " + message);
+const cliResultCallback = function(result, message, context, path) {
+    const indentString  = "  ";
+    const onlyErrors    = opt.named.hasOwnProperty("only-errors");
+    const indent        = indentString.repeat(onlyErrors ? 0 : Math.max(0, rdapValidator.path.length-1));
 
-    } else {
-        if (result) {
-            if (!opt.named.hasOwnProperty("only-errors")) {
-                console.log("\x1b[1;32m✓\x1b[0m " + message);
-            }
+    if (false === result) {
+        message = message + " (" + path + ")";
+
+        console.log(indent + "\x1b[1;31m✘\x1b[0m " + message);
+
+        if (context !== undefined) {
+            console.log("\n" + indentString + indentString + indent + JSON.stringify(context, null, 2).trimEnd().replaceAll("\n", "\n" + indentString + indentString + indent) + "\n");
+        }
+
+    } else if (false === onlyErrors) {
+        if (true === result) {
+            console.log(indent + "\x1b[1;32m✓\x1b[0m " + message);
 
         } else {
-            console.log("\x1b[1;31m✘\x1b[0m " + message);
+            console.log(indent + "\x1b[1;33mi\x1b[0m " + message);
 
         }
     }
-
-    if (!result && context !== undefined) {
-        console.log("\n  "+JSON.stringify(context, null, 2).trimEnd().replaceAll("\n", "\n  ") + "\n");
-    }
 };
 
-const jsonResultCallback = function(result, message, context) {
+const jsonResultCallback = function(result, message, context, path) {
     jsonResultData.results.push({
-        result: result,
+        testPassed: result,
         message: message,
         context: context,
+        path: path,
     });
 };
 
