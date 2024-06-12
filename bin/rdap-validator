@@ -34,6 +34,7 @@ import rdapValidator  from "../lib/rdap-validator.js";
 import XMLHttpRequest from "xmlhttprequest";
 
 const jsonResultData = {
+    rdapValidatorVersion:   rdapValidator.version,
     testedURL:              url,
     expectedResponseType:   responseType,
     serverType:             serverType,
@@ -44,7 +45,7 @@ rdapValidator.setXHR(XMLHttpRequest.XMLHttpRequest);
 
 let lastPath = null;
 
-const cliResultCallback = function(result, message, context, path) {
+const cliResultCallback = function(result, message, path) {
     const indentString  = "  ";
     const onlyErrors    = opt.named.hasOwnProperty("only-errors");
     const indent        = indentString.repeat(onlyErrors ? 0 : Math.max(0, rdapValidator.path.length-1));
@@ -53,10 +54,6 @@ const cliResultCallback = function(result, message, context, path) {
         message = message + " (" + path + ")";
 
         console.log(indent + "\x1b[1;31m✘\x1b[0m " + message);
-
-        if (context !== undefined) {
-            console.log("\n" + indentString + indentString + indent + JSON.stringify(context, null, 2).trimEnd().replaceAll("\n", "\n" + indentString + indentString + indent) + "\n");
-        }
 
     } else if (false === onlyErrors) {
         if (true === result) {
@@ -69,12 +66,11 @@ const cliResultCallback = function(result, message, context, path) {
     }
 };
 
-const jsonResultCallback = function(result, message, context, path) {
+const jsonResultCallback = function(result, message, path) {
     jsonResultData.results.push({
         testPassed: result,
-        message: message,
-        context: context,
-        path: path,
+        message:    message,
+        path:       path,
     });
 };
 
