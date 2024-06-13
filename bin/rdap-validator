@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.stdout.say = (l) => process.stdout.write(l + "\n");
+
 /**
  * start by parsing the command-line arguments
  */
@@ -43,27 +45,32 @@ const jsonResultData = {
 
 rdapValidator.setXHR(XMLHttpRequest.XMLHttpRequest);
 
-let lastPath = null;
+let lastDepth = 0;
+
+const INDENT_STRING     = "  ";
+const MSG_FAIL          = "\x1b[1;31m✘\x1b[0m";
+const MSG_PASS          = "\x1b[1;32m✓\x1b[0m";
+const MSG_INFO          = "\x1b[1;33mi\x1b[0m";
 
 const cliResultCallback = function(result, message, path) {
-    const indentString  = "  ";
     const onlyErrors    = opt.named.hasOwnProperty("only-errors");
-    const indent        = indentString.repeat(onlyErrors ? 0 : Math.max(0, rdapValidator.path.length-1));
+    const depth         = rdapValidator.path.length;
+    const indent        = INDENT_STRING.repeat(onlyErrors ? 0 : Math.max(0, depth-1)) + "- ";
 
     if (false === result) {
-        message = message + " (" + path + ")";
-
-        console.log(indent + "\x1b[1;31m✘\x1b[0m " + message);
+        process.stdout.say(indent + MSG_FAIL + " " + message + " (" + path + ")");
 
     } else if (false === onlyErrors) {
         if (true === result) {
-            console.log(indent + "\x1b[1;32m✓\x1b[0m " + message);
+            process.stdout.say(indent + MSG_PASS + " " + message);
 
         } else {
-            console.log(indent + "\x1b[1;33mi\x1b[0m " + message);
+            process.stdout.say(indent + MSG_INFO + " " + message);
 
         }
     }
+
+    lastDepth = depth;
 };
 
 const jsonResultCallback = function(result, message, path) {
@@ -81,7 +88,7 @@ if (opt.named.json) {
         jsonResultData.responseHeaders  = rdapValidator.lastTestedResponseHeaders;
         jsonResultData.jsonResponse     = rdapValidator.lastTestedResponse;
 
-        console.log(JSON.stringify(jsonResultData, null, 2));
+        process.stdout.say(JSON.stringify(jsonResultData, null, 2));
     });
 
     rdapValidator.setResultCallback(jsonResultCallback);
@@ -92,23 +99,23 @@ if (opt.named.json) {
 }
 
 function help(x) {
-    console.log("Usage: " + process.argv[1] + " [OPTIONS] URL");
-    console.log("Options:");
+    process.stdout.say("Usage: " + process.argv[1] + " [OPTIONS] URL");
+    process.stdout.say("Options:");
 
-    console.log("  --help               Show this help.");
+    process.stdout.say("  --help               Show this help.");
 
-    console.log("  --only-errors        Only show errors.");
+    process.stdout.say("  --only-errors        Only show errors.");
 
-    console.log("  --json               Output result in JSON.");
+    process.stdout.say("  --json               Output result in JSON.");
 
-    console.log("  --type=TYPE          Expected response type, which must be one of:");
-    Object.keys(rdapValidator.responseTypes).forEach((t) => console.log(" ".repeat(25) + "- " + t));
+    process.stdout.say("  --type=TYPE          Expected response type, which must be one of:");
+    Object.keys(rdapValidator.responseTypes).forEach((t) => process.stdout.say(" ".repeat(25) + "- " + t));
 
-    console.log("  --server-type=TYPE   Server type, which must be one of:");
-    Object.keys(rdapValidator.serverTypes).forEach((t) => console.log(" ".repeat(25) + "- " + t));
+    process.stdout.say("  --server-type=TYPE   Server type, which must be one of:");
+    Object.keys(rdapValidator.serverTypes).forEach((t) => process.stdout.say(" ".repeat(25) + "- " + t));
 
-    console.log("");
-    console.log("Copyright 2024 Gavin Brown <https://about.rdap.org>.");
+    process.stdout.say("");
+    process.stdout.say("Copyright 2024 Gavin Brown <https://about.rdap.org>.");
 
     process.exit(x);
 }
