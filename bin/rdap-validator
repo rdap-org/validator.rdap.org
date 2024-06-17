@@ -109,7 +109,7 @@ function help(x) {
     process.stdout.say("  --json               Output result in JSON.");
 
     process.stdout.say("  --type=TYPE          Expected response type, which must be one of:");
-    Object.keys(rdapValidator.responseTypes).forEach((t) => process.stdout.say(" ".repeat(25) + "- " + t));
+    Object.keys(rdapValidator.responseTypes).forEach((t) => process.stdout.say(" ".repeat(25) + "- " + t.replace("ip network", "ip-network")));
 
     process.stdout.say("  --server-type=TYPE   Server type, which must be one of:");
     Object.keys(rdapValidator.serverTypes).forEach((t) => process.stdout.say(" ".repeat(25) + "- " + t));
@@ -126,7 +126,7 @@ if (opt.named.hasOwnProperty("help")) {
 } else {
     rdapValidator.testURL(
         url,
-        responseType,
+        responseType.replace("ip-network", "ip network"),
         serverType,
     );
 }
