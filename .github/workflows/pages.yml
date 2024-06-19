@@ -19,13 +19,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: create site directory
-        run: mkdir -p _site
+        run: cp -Rvp www _site
 
       - name: copy libs
-        run: cp -R lib _site/
-
-      - name: copy page
-        run: cp rdap-validator.html _site/index.html
+        run: cp -Rvp lib _site/
 
       - name: configure
         uses: actions/configure-pages@v4
