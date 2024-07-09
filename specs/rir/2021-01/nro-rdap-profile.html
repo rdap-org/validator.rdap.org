@@ -1,0 +1,798 @@
+<!doctype html>
+<!--
+
+this file contains the raw text from:
+
+https://bitbucket.org/nroecg/nro-rdap-profile/raw/0ede2b21a9103409b7d4c9c8a1894eb230b77dcd/nro-rdap-profile.txt
+
+it has been lightly reformatted to add anchors for section headers.
+
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>NRO RDAP Profile</title>
+</head>
+<body>
+<pre>
+
+
+
+
+
+                                                        January 14, 2021
+
+
+                            NRO RDAP Profile
+                            nro-rdap-profile
+
+Abstract
+
+   Each Regional Internet Registry (RIR) operates a public Registration
+   Data Access Protocol (RDAP) service.  This document defines an RDAP
+   profile for use by the RIRs, so as to increase consistency in service
+   offerings and simplify the development of client software that uses
+   those services.
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+     1.1.  Requirements Language . . . . . . . . . . . . . . . . . .   2
+   2.  Definitions . . . . . . . . . . . . . . . . . . . . . . . . .   2
+   3.  Common Data Types . . . . . . . . . . . . . . . . . . . . . .   3
+     3.1.  Domain Names  . . . . . . . . . . . . . . . . . . . . . .   3
+   4.  Common Data Structures  . . . . . . . . . . . . . . . . . . .   3
+     4.1.  RDAP Conformance  . . . . . . . . . . . . . . . . . . . .   3
+     4.2.  Links . . . . . . . . . . . . . . . . . . . . . . . . . .   4
+     4.3.  Notices and Remarks . . . . . . . . . . . . . . . . . . .   4
+     4.4.  Events  . . . . . . . . . . . . . . . . . . . . . . . . .   4
+     4.5.  Status  . . . . . . . . . . . . . . . . . . . . . . . . .   4
+   5.  Object Classes  . . . . . . . . . . . . . . . . . . . . . . .   5
+     5.1.  The Entity Object Class . . . . . . . . . . . . . . . . .   5
+       5.1.1.  jCards  . . . . . . . . . . . . . . . . . . . . . . .   5
+       5.1.2.  Other . . . . . . . . . . . . . . . . . . . . . . . .   6
+     5.2.  The Domain Object Class . . . . . . . . . . . . . . . . .   6
+     5.3.  INR Entities  . . . . . . . . . . . . . . . . . . . . . .   6
+     5.4.  The IP Network Object Class . . . . . . . . . . . . . . .   7
+     5.5.  The Autonomous System Number Object Class . . . . . . . .   7
+   6.  Query Processing  . . . . . . . . . . . . . . . . . . . . . .   7
+     6.1.  Internet Number Resources . . . . . . . . . . . . . . . .   7
+       6.1.1.  IP Networks . . . . . . . . . . . . . . . . . . . . .   7
+       6.1.2.  Autnums . . . . . . . . . . . . . . . . . . . . . . .   8
+         6.1.2.1.  Common requirements . . . . . . . . . . . . . . .   8
+         6.1.2.2.  Hierarchical model  . . . . . . . . . . . . . . .   8
+         6.1.2.3.  Flat model  . . . . . . . . . . . . . . . . . . .   9
+     6.2.  Domains . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     6.3.  Nameserver  . . . . . . . . . . . . . . . . . . . . . . .   9
+     6.4.  Help  . . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     6.5.  Delegated service . . . . . . . . . . . . . . . . . . . .  10
+       6.5.1.  Preliminary . . . . . . . . . . . . . . . . . . . . .  10
+
+
+
+                                                                [Page 1]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+
+       6.5.2.  Application . . . . . . . . . . . . . . . . . . . . .  10
+   7.  Error Responses . . . . . . . . . . . . . . . . . . . . . . .  10
+   8.  Indicating Truncated Responses  . . . . . . . . . . . . . . .  10
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  12
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  12
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  13
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  13
+</pre>
+<a name="section-1"></a>
+<pre>1.  Introduction
+
+   The RDAP protocol allows for significant operator flexibility as to
+   how requests are handled, how responses are structured, and how much
+   information is provided to clients.  Each of the RIRs operates an
+   RDAP service, and while each service is broadly compliant with the
+   protocol, there is substantial divergence among them in areas where
+   the protocol explicitly permits that, as well as in areas where the
+   protocol omits to define required behaviour.  This makes writing
+   generic client software difficult: service-specific exceptions and
+   workarounds need to be implemented, and default behaviours may be
+   unnecessarily inefficient.
+
+   Separately, with the exception of objectClassName, the protocol does
+   not require that any particular element be present in a response: see
+   Section 2.1 of [RFC7483].  It is open to operators as a matter of
+   local policy to return elements in some cases and not others, which
+   makes it difficult for client software authors to make any guarantees
+   about how their software will operate.
+
+   To address these problems in the number registry context, this
+   document defines an RDAP profile for use by the RIRs, so as to
+   increase consistency in service offerings and simplify the
+   development of client software that uses those services.
+</pre>
+<a name="section-1.1"></a>
+<pre>1.1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in RFC 2119 [RFC2119].
+</pre>
+<a name="section-2"></a>
+<pre>2.  Definitions
+
+   These definitions are for the purposes of this document only.
+
+   An RIR that has had Internet Number Resources (INRs) delegated to it
+   is defined as having "delegation authority" over those resources.
+   For example, IANA has delegated 103/8 to APNIC, so APNIC has
+
+
+
+                                                                [Page 2]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+
+   "delegation authority" over 103/8.  Delegation authority is not
+   exclusive: multiple RIRs may have delegation authority over a given
+   INR at a given point in time.
+
+   An RIR that has had INRs delegated to it, and has not further
+   delegated those resources to another RIR after the last instance of
+   those resources being delegated to it, is defined as having
+   "registration authority" over those resources.  Registration
+   authority is exclusive: only one RIR may have registration authority
+   over a given INR at a given point in time.
+
+   An RIR may have only delegation authority over a set of resources:
+   this occurs e.g. where an RIR has transferred resources to another
+   RIR (the source RIR has only delegation authority, in this case).  An
+   RIR cannot have registration authority for resources without also
+   having delegation authority for those resources, though: in the
+   inter-RIR transfer case, the recipient RIR has both delegation
+   authority and registration authority over the resources.
+</pre>
+<a name="section-3"></a>
+<pre>3.  Common Data Types
+</pre>
+<a name="section-3.1"></a>
+<pre>3.1.  Domain Names
+
+   Trailing periods MUST be included in "ldhName" and "unicodeName"
+   values.
+</pre>
+<a name="section-4"></a>
+<pre>4.  Common Data Structures
+</pre>
+<a name="section-4.1"></a>
+<pre>4.1.  RDAP Conformance
+
+   Each response MUST include an rdapConformance element.  The service
+   MUST conform with RFC 7483 [RFC7483], so "rdap_level_0" will be
+   included as an rdapConformance value in each response.
+
+   To signify conformance with this specification, the string literal
+   "nro_rdap_profile_0" MUST be included as an rdapConformance value in
+   each response.
+
+   The service MUST implement the "cidr0" extension (registered with
+   IANA), so the string literal "cidr0" MUST be included as an
+   rdapConformance value in each response.
+
+   The "Query Processing" section for autnums requires services to
+   include an additional rdapConformance value for the autnum processing
+   logic that is being used.
+
+   Other rdapConformance values MAY be included.
+
+
+
+
+                                                                [Page 3]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+</pre>
+<a name="section-4.2"></a>
+<pre>4.2.  Links
+
+   Each object, including nested objects, MUST include a link with the
+   "self" link relation type, pointing to the object.  See Section 5 of
+   [RFC7483].
+</pre>
+<a name="section-4.3"></a>
+<pre>4.3.  Notices and Remarks
+
+   Each response MUST include a notices element in the topmost object.
+
+   Each response MUST include a notice containing details on the terms
+   and conditions of use of the service.  This notice MUST contain a
+   link with a link relation type of "terms-of-service".
+
+   Each response MUST include a notice containing details on how to
+   report inaccurate Whois data.  This notice MUST contain a link with a
+   link relation type of "inaccuracy-report".
+
+   Other notices MAY be included.
+</pre>
+<a name="section-4.4"></a>
+<pre>4.4.  Events
+
+   Each response that includes an RDAP object as the topmost object
+   SHOULD include a "registration" event and a "last changed" event for
+   that object.  This may not be possible for all objects: for example,
+   event data for legacy IP network objects is often missing or
+   unreliable.
+</pre>
+<a name="section-4.5"></a>
+<pre>4.5.  Status
+
+   Each Internet Number Resource (INR) object that represents a
+   delegation from an RIR for operational use in a network, or for
+   further sub-delegation for such use, MUST have a status of "active".
+   A status of "active" does not necessarily mean that the associated
+   resources will be in use on the public Internet.
+
+   Each INR object that represents an entry in one of the special-
+   purpose address registries ([SPAR-IPV4], [SPAR-IPV6], [SPAR-ASN])
+   MUST have a status of "reserved".
+
+   Each INR object that represents a delegation that is less-specific
+   than a delegation that has a status of "active", and does not also
+   have a status of "active", MUST have a status of "administrative".
+   For example, the object representing a delegation of resources from
+   IANA to an RIR would fall into this category.
+
+
+
+
+
+
+                                                                [Page 4]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+</pre>
+<a name="section-5"></a>
+<pre>5.  Object Classes
+</pre>
+<a name="section-5.1"></a>
+<pre>5.1.  The Entity Object Class
+</pre>
+<a name="section-5.1.1"></a>
+<pre>5.1.1.  jCards
+
+   The following properties may be used in Entity jCards:
+
+      kind;
+
+      fn;
+
+      n;
+
+      adr;
+
+      tel;
+
+      email;
+
+      lang;
+
+      geo;
+
+      title;
+
+      role;
+
+      org;
+
+      version; and
+
+      contact-uri.
+
+   Each jCard MUST contain a "kind" property.  The value of that
+   property MUST be "individual", "group", or "org".
+
+   A "geo" property MUST have a type of "uri".  A "tel" property MUST
+   have a type of "uri" or "text".  A "lang" property MUST have a type
+   of "language-tag".  A "contact-uri" property MUST have a type of
+   "uri".  All other properties MUST have a type of "text".
+
+   An "adr" property MUST include a "label" parameter, containing the
+   content of the delivery address as a single string.
+
+   Properties may include "language", "altid", and "pref" parameters.
+
+
+
+
+
+                                                                [Page 5]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+
+   "email", "org" and "adr" properties may include a "type" parameter.
+   The "type" parameter values that may be used are "work" and "home".
+
+   A "tel" property may include a "type" parameter.  The "type"
+   parameter values that may be used are those defined in [RFC6350].
+
+   An "adr" property may include a "cc" parameter.  This parameter may
+   be set even when the "country name" component of the property's value
+   is not set.
+
+   Properties, types, and parameters not expressly permitted by way of
+   this profile MUST NOT be used.
+</pre>
+<a name="section-5.1.2"></a>
+<pre>5.1.2.  Other
+
+   Each top-level entity object that has the "registrant" role for one
+   or more IP networks MUST include a "networks" element containing only
+   those IP networks.  The "networks" element MUST NOT be included in
+   other types of entity object.
+
+   Each top-level entity object that has the "registrant" role for one
+   or more autnums MUST include an "autnums" element containing only
+   those autnums.  The "autnums" element MUST NOT be included in other
+   types of entity object.
+
+   Services MAY limit the number of associated networks or autnums that
+   are included in an entity object.  However, the limit MUST NOT be
+   zero.
+</pre>
+<a name="section-5.2"></a>
+<pre>5.2.  The Domain Object Class
+
+   Each domain object MUST include an "ldhName" element.
+
+   Each domain object MUST include a "network" element, if the reverse
+   domain maps to an IP network object.  This applies regardless of
+   whether that network has a status of "active".
+
+   Each domain object MUST include a "nameservers" element.  For
+   services that do not support nameserver queries, objects within this
+   element will not include a "self" link, and are an exception to the
+   earlier statement that all objects must include a "self" link.
+</pre>
+<a name="section-5.3"></a>
+<pre>5.3.  INR Entities
+
+   Each INR object SHOULD include a nested entity with the "abuse" role
+   for the INR.  If the entity is present, its jCard [RFC7095] MUST
+   include a contact email address.  This nested entity would only be
+   missing from the response when the registry does not have the
+
+
+
+                                                                [Page 6]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+
+   relevant data, or is compelled by the registry's regulatory
+   environment to omit it.
+
+   Each INR object SHOULD include a nested entity with the "registrant"
+   role for the INR.
+</pre>
+<a name="section-5.4"></a>
+<pre>5.4.  The IP Network Object Class
+
+   Each IP network object MUST include "handle", "startAddress",
+   "endAddress", "ipVersion", and "status" elements.
+</pre>
+<a name="section-5.5"></a>
+<pre>5.5.  The Autonomous System Number Object Class
+
+   Each ASN object MUST include "handle", "startAutnum", "endAutnum",
+   and "status" elements.
+</pre>
+<a name="section-6"></a>
+<pre>6.  Query Processing
+</pre>
+<a name="section-6.1"></a>
+<pre>6.1.  Internet Number Resources
+</pre>
+<a name="section-6.1.1"></a>
+<pre>6.1.1.  IP Networks
+
+   An RIR that receives a query for an IP network for which it has only
+   partial delegation authority MUST return a valid IP network object
+   response, being the most-specific administrative object that
+   encompasses the IP network.
+
+   An RIR that receives a query for an IP network for which it has
+   delegation authority, but for which it has only partial registration
+   authority, MUST return a valid IP network object response, being the
+   most-specific administrative object that encompasses the IP network.
+
+   An RIR that receives a query for an IP network for which it has
+   delegation authority, but for which it does not have registration
+   authority (including partial registration authority), MUST redirect
+   the query to either the RIR to which it most recently transferred
+   delegation authority, or the RIR that currently has registration
+   authority.
+
+   An RIR that receives a query for an IP network for which it has
+   registration authority but that has not been further delegated by the
+   RIR to one of its own accounts (i.e. that does not fall within the
+   bounds of an IP network object with a status of "active") MUST return
+   a valid IP network object response, being the most-specific
+   administrative object that encompasses the IP network.
+
+   An RIR that receives a query for an IP network for which it has never
+   had delegation authority MAY redirect the query to the RIR that
+
+
+
+                                                                [Page 7]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+
+   currently has registration authority for the IP network, or (if no
+   single registry has registration authority) to an RIR that has
+   delegation authority for the IP network.  If an RIR does not
+   implement this behaviour, or if no single registry has delegation
+   authority, the RIR MUST respond with a "404 Not Found" response.
+
+   An RIR MAY respond to queries for IP networks that have not been
+   delegated (in whole or in part) to it or to another RIR (e.g. the IP
+   networks from one of the special-purpose address registries
+   ([SPAR-IPV4], [SPAR-IPV6], [SPAR-ASN])).
+</pre>
+<a name="section-6.1.2"></a>
+<pre>6.1.2.  Autnums
+
+   For autnum queries, there is a set of common requirements.  After
+   that, an RIR has two options for processing autnum queries: a
+   hierarchical model, or a flat model.
+</pre>
+<a name="section-6.1.2.1"></a>
+<pre>6.1.2.1.  Common requirements
+
+   An RIR that receives a query for an autnum for which it has
+   delegation authority, but for which it does not have registration
+   authority, MUST redirect the query to either the RIR to which it most
+   recently transferred delegation authority, or the RIR that currently
+   has registration authority.
+
+   An RIR that receives a query for an autnum for which it has never had
+   delegation authority MAY redirect the query to the RIR that currently
+   has registration authority for the autnum.  If an RIR does not
+   implement this behaviour, the RIR MUST respond with a "404 Not Found"
+   response.
+
+   An RIR MAY respond to queries for autnums that have not been
+   delegated (in whole or in part) to it or to another RIR.
+</pre>
+<a name="section-6.1.2.2"></a>
+<pre>6.1.2.2.  Hierarchical model
+
+   An RIR that receives a query for an autnum for which it has
+   registration authority but that has not been further delegated by the
+   RIR to one of its own accounts (i.e. that does not fall within the
+   bounds of an IP network object with a status of "active") MUST return
+   a valid autnum object response, being the most-specific
+   administrative object that encompasses the IP network.
+
+   To signify use of the hierarchical model, the string literal
+   "nro_rdap_profile_asn_hierarchical_0" MUST be included as an
+   rdapConformance value in each response.
+
+
+
+
+
+                                                                [Page 8]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+</pre>
+<a name="section-6.1.2.3"></a>
+<pre>6.1.2.3.  Flat model
+
+   An RIR that receives a query for an autnum for which it has
+   registration authority but that has not been further delegated by the
+   RIR to one of its own accounts MUST respond with a "404 Not Found"
+   response.
+
+   To signify use of the flat model, the string literal
+   "nro_rdap_profile_asn_flat_0" MUST be included as an rdapConformance
+   value in each response.
+</pre>
+<a name="section-6.2"></a>
+<pre>6.2.  Domains
+
+   RIRs do not host forward domains.  A query for a forward domain MAY
+   be redirected in accordance with the bootstrap logic defined in RFC
+   7484.
+
+   An RIR that receives a query for a reverse domain, where the RIR has
+   delegation authority but not registration authority over the
+   corresponding INR, MUST redirect the query to either the RIR to which
+   it transferred delegation authority, or the RIR that currently has
+   registration authority.
+
+   An RIR that receives a query for a reverse domain, where the RIR has
+   never had delegation authority for the corresponding INR, MAY
+   redirect the query to the RIR that currently has registration
+   authority for the INR.
+
+   If an RIR receives a query for a reverse domain that does not exist,
+   where a "closest encloser" (see Section 3.3 of [RFC4592]) of the
+   reverse domain does exist, then the RIR MUST respond as if the query
+   had been for that closest encloser.  This does not apply if the
+   closest encloser is "in-addr.arpa" or "ip6.arpa".
+</pre>
+<a name="section-6.3"></a>
+<pre>6.3.  Nameserver
+
+   Nameserver queries MAY be supported.  If a service does not support
+   nameserver queries, it MUST respond with a "501 Not Implemented"
+   response.
+</pre>
+<a name="section-6.4"></a>
+<pre>6.4.  Help
+
+   Services MUST respond to "help" queries with a valid RDAP object
+   containing the default set of notices for the service.
+
+   The rdapConformance element in the response MUST include the
+   extension identifiers for all of the extensions implemented by the
+   service.
+
+
+
+                                                                [Page 9]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+</pre>
+<a name="section-6.5"></a>
+<pre>6.5.  Delegated service
+</pre>
+<a name="section-6.5.1"></a>
+<pre>6.5.1.  Preliminary
+
+   An RIR may delegate resources in such a way that the holder of those
+   resources runs a separate RDAP service for those queries.  When the
+   RIR receives a query for resources that have been delegated in this
+   way, it may either redirect (via HTTP) to the remote RDAP service, or
+   answer the query in some other way (e.g. by hosting a local copy of
+   that remote RDAP service's data).
+
+   A client who receives an HTTP redirect from a service to a non-RIR
+   RDAP service should be prepared to receive responses that are not in
+   compliance with this profile.
+
+   An RIR that responds to a query for resources that have been
+   delegated in this way in its own right MUST ensure that the response
+   is in compliance with this profile.
+
+   An RIR that responds to a query for resources that have been
+   delegated in this way by redirecting to another service MUST
+   implement the "redirect_with_content" extension (registered with
+   IANA).
+</pre>
+<a name="section-6.5.2"></a>
+<pre>6.5.2.  Application
+
+   This profile has various provisions that are specific to the RIRs,
+   and do not apply to delegated service operators.  To avoid any doubt,
+   a non-RIR RDAP service that implements this profile is not required
+   to support any of the behaviour specified in the "Query Processing"
+   section.
+</pre>
+<a name="section-7"></a>
+<pre>7.  Error Responses
+
+   The title of an error response MUST be the reason phrase (see
+   [RFC7231]) associated with the errorCode of the error response.
+
+   The description of an error response SHOULD describe the error in
+   more detail (i.e. in more detail than the associated HTTP reason
+   phrase).
+</pre>
+<a name="section-8"></a>
+<pre>8.  Indicating Truncated Responses
+
+   A truncated response MUST indicate that it is truncated by way of a
+   typed notice or a typed remark, as described in Section 9 of
+   [RFC7483].
+
+
+
+
+
+                                                               [Page 10]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+</pre>
+<a name="section-9"></a>
+<pre>9.  IANA Considerations
+
+   IANA is requested to register the following values in the RDAP
+   Extensions Registry:
+
+      Extension identifier: nro_rdap_profile_0
+
+      Registry operator: Any
+
+      Published specification: This document.
+
+      Contact: NRO &lt;secretariat@nro.net&gt;
+
+      Intended usage: ADDRESS REGISTRIES
+
+      Extension identifier: nro_rdap_profile_asn_hierarchical_0
+
+      Registry operator: Any
+
+      Published specification: This document.
+
+      Contact: NRO &lt;secretariat@nro.net&gt;
+
+      Intended usage: ADDRESS REGISTRIES
+
+      Extension identifier: nro_rdap_profile_asn_flat_0
+
+      Registry operator: Any
+
+      Published specification: This document.
+
+      Contact: NRO &lt;secretariat@nro.net&gt;
+
+      Intended usage: ADDRESS REGISTRIES
+
+   IANA is requested to register the following values in the RDAP JSON
+   Values Registry:
+
+      Value: administrative
+
+      Type: status
+
+      Description: The object instance has been allocated
+      administratively (i.e. not for use by the recipient in their own
+      right in operational networks).
+
+      Registrant Name: NRO
+
+
+
+
+                                                               [Page 11]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+
+      Registrant Contact Information: &lt;secretariat@nro.net&gt;
+
+      Value: reserved
+
+      Type: status
+
+      Description: The object instance has been allocated to an IANA
+      special-purpose address registry.
+
+      Registrant Name: NRO
+
+      Registrant Contact Information: &lt;secretariat@nro.net&gt;
+</pre>
+<a name="section-10"></a>
+<pre>10.  Security Considerations
+
+   This document does not introduce any new security considerations past
+   those already discussed in the RDAP protocol specifications.
+</pre>
+<a name="section-11"></a>
+<pre>11.  References
+</pre>
+<a name="section-11.1"></a>
+<pre>11.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              &lt;https://www.rfc-editor.org/info/rfc2119&gt;.
+
+   [RFC4592]  Lewis, E., "The Role of Wildcards in the Domain Name
+              System", RFC 4592, DOI 10.17487/RFC4592, July 2006,
+              &lt;https://www.rfc-editor.org/info/rfc4592&gt;.
+
+   [RFC6350]  Perreault, S., "vCard Format Specification", RFC 6350,
+              DOI 10.17487/RFC6350, August 2011,
+              &lt;https://www.rfc-editor.org/info/rfc6350&gt;.
+
+   [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
+              Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
+              DOI 10.17487/RFC7231, June 2014,
+              &lt;https://www.rfc-editor.org/info/rfc7231&gt;.
+
+   [RFC7483]  Newton, A. and S. Hollenbeck, "JSON Responses for the
+              Registration Data Access Protocol (RDAP)", RFC 7483,
+              DOI 10.17487/RFC7483, March 2015,
+              &lt;https://www.rfc-editor.org/info/rfc7483&gt;.
+
+
+
+
+
+
+
+                                                               [Page 12]
+</pre>
+<pre>
+                            NRO RDAP Profile                January 2021
+
+</pre>
+<a name="section-11.2"></a>
+<pre>11.2.  Informative References
+
+   [RFC7095]  Kewisch, P., "jCard: The JSON Format for vCard", RFC 7095,
+              DOI 10.17487/RFC7095, January 2014,
+              &lt;https://www.rfc-editor.org/info/rfc7095&gt;.
+
+   [SPAR-ASN]
+              "Special-Purpose Autonomous System (AS) Numbers",
+              &lt;https://www.iana.org/assignments/iana-ipv6-special-
+              registry&gt;.
+
+   [SPAR-IPV4]
+              "IANA IPv4 Special-Purpose Address Registry",
+              &lt;https://www.iana.org/assignments/iana-ipv4-special-
+              registry&gt;.
+
+   [SPAR-IPV6]
+              "IANA IPv6 Special-Purpose Address Registry",
+              &lt;https://www.iana.org/assignments/iana-ipv6-special-
+              registry&gt;.
+
+Author's Address
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                               [Page 13]</pre>
+
+</html>
