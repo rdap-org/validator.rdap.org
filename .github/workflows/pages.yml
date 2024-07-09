@@ -21,8 +21,8 @@ jobs:
       - name: create site directory
         run: cp -Rvp www _site
 
-      - name: copy libs
-        run: cp -Rvp lib _site/
+      - name: copy files
+        run: cp -Rvp lib specs _site/
 
       - name: configure
         uses: actions/configure-pages@v4
