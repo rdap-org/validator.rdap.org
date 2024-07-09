@@ -24,6 +24,10 @@ jobs:
       - name: copy files
         run: cp -Rvp lib specs _site/
 
+      - name: create robots.txt
+        run: |
+          print "User-agent: *\nDisallow: /specs\n" > _site/robots.txt
+
       - name: configure
         uses: actions/configure-pages@v4
 
