@@ -26,7 +26,7 @@ jobs:
 
       - name: create robots.txt
         run: |
-          echo "User-agent: *\nDisallow: /specs\n" > _site/robots.txt
+          printf "User-agent: *\nDisallow: /specs\n" > _site/robots.txt
 
       - name: configure
         uses: actions/configure-pages@v4
