@@ -47,24 +47,27 @@
   <body>
     <div class="container">
       <form class="form">
-        <p><label>
-          Enter URL:
-          <input type="url" id="url" placeholder="https://rdap.example.com/domain/icann.org">
+        <p class="mb-3">
+          <label class="form-label" for="url">Enter URL:</label>
+          <input class="form-control" type="url" id="url" placeholder="https://rdap.org/domain/example.com">
+        </p>
+
+        <p class="mb-3">
+          <label class="form-label" for="response-type">Expected Response Type:</label>
+          <select class="form-control form-select" id="response-type"></select>
+        </p>
+
+        <p class="mb-3">
+          <label class="form-label" for="server-type">Server type:</select>
+          <select class="form-control form-select" id="server-type"></select>
         </label></p>
 
-        <p><label>
-          Expected Response Type:
-          <select id="response-type">
-          </select>
-        </label></p>
+        <p class="form-check">
+          <input class="form-check-input" type="checkbox" id="errors-only">
+          <label class="form-check-label" for="errors-only">Show errors only</label>
+        </p>
 
-        <p id="options"><label>
-          Server type:
-          <select id="server-type">
-          </select>
-        </label></p>
-
-        <p><label><input type="checkbox" id="errors-only"> Show errors only</p>
+        <br>
 
         <p><input class="btn btn-secondary" id="button" type="button" value="Test"></p>
       </form>
