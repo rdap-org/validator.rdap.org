@@ -1,4 +1,4 @@
-import rdapValidator from "./rdap-validator.js";
+import rdapValidator from "../lib/rdap-validator.js";
 
 rdapValidator.setXHR(XMLHttpRequest);
 

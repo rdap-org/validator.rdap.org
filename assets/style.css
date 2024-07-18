@@ -1,0 +1,35 @@
+dd {
+  margin-left: 4em;
+}
+.card {
+  margin: 0.5em 0;
+}
+pre {
+  margin:0;
+  padding:0;
+}
+details > div {
+  margin-left: 2em;
+}
+summary pre {
+  display:inline;
+}
+#result-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+#tree, #results {
+  overflow:scroll;
+  height: 50vh;
+  padding:0.5em;
+}
+#result-container card:first-child {
+  margin-right: 0.25em;
+}
+#result-container card:last-child {
+  margin-left: 0.25em;
+  
+}
+.list-group-item-action:hover {
+  cursor:pointer;
+}

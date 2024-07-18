@@ -1,4 +1,12 @@
-.*
-node_modules
-Dockerfile
 CNAME
+Dockerfile
+Gemfile
+Gemfile.lock
+LICENSE
+README.md
+_config.yml
+_layouts
+_site
+assets
+index.html
+specs

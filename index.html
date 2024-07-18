@@ -1,0 +1,48 @@
+---
+title: "Validator"
+layout: page
+stylesheets:
+- ./assets/style.css?v=202407182046
+modules:
+- ./assets/spa.js?v=202407182046
+---
+<form class="form">
+  <p class="mb-3">
+    <label class="form-label" for="url">Enter URL:</label>
+    <input class="form-control" type="url" id="url" placeholder="https://rdap.org/domain/example.com">
+  </p>
+
+  <p class="mb-3">
+    <label class="form-label" for="response-type">Expected Response Type:</label>
+    <select class="form-control form-select" id="response-type"></select>
+  </p>
+
+  <p class="mb-3">
+    <label class="form-label" for="server-type">Server type:</select>
+    <select class="form-control form-select" id="server-type"></select>
+  </label></p>
+
+  <p class="form-check">
+    <input class="form-check-input" type="checkbox" id="errors-only">
+    <label class="form-check-label" for="errors-only">Show errors only</label>
+  </p>
+
+  <br>
+
+  <p><input class="btn btn-secondary" id="button" type="button" value="Test"></p>
+</form>
+
+<div id="result-container" hidden>
+  <div class="card">
+    <div class="card-header">Results</div>
+    <ul class="list-group list-group-flush" id="results"></ul>
+  </div>
+  <div class="card">
+    <div class="card-header">RDAP Response</div>
+    <div class="card-body" id="tree"></div>
+  </div>
+</div>
+
+<p>This tool is also available as a command-line tool and JavaScript
+library. For more information, <a href="https://github.com/rdap-org/validator.rdap.org">
+check out the GitHub repository</a>.</p>
