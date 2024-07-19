@@ -1,16 +1,17 @@
 title: RDAP.ORG
 email: feedback@rdap.org
-description: RDAP Validator
+description: RDAP Response Validator
 baseurl: "/"
-url: "https://about.rdap.org"
+url: "https://validator.rdap.org"
+keywords: rdap, whois, rdap, domain name, dns, ip address
 
 exclude:
-  - bin
-  - Dockerfile
-  - CNAME
   - .dockerignore
   - .gitignore
+  - CNAME
+  - Dockerfile
   - LICENSE
+  - README.md
+  - bin
   - package-lock.json
   - package.json
-  - README.md
