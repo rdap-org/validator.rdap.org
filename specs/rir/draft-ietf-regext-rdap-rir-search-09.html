@@ -1,0 +1,3267 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>RDAP RIR Search</title>
+<meta content="Tom Harrison" name="author">
+<meta content="Jasdip Singh" name="author">
+<meta content="
+       
+
+            The Registration Data Access Protocol (RDAP) is used by
+            Regional Internet Registries (RIRs) and Domain Name
+            Registries (DNRs) to provide access to their resource
+            registration information.  The core specifications for
+            RDAP define basic search functionality, but there are
+            various IP and ASN-related search options provided by RIRs
+            via their Whois services for which there is no
+            corresponding RDAP functionality.  This document extends
+            RDAP to support those search options.
+
+       
+    " name="description">
+<meta content="xml2rfc 3.20.1" name="generator">
+<meta content="template" name="keyword">
+<meta content="draft-ietf-regext-rdap-rir-search-09" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.20.1
+    Python 3.9.18
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.0
+    intervaltree 3.1.0
+    Jinja2 3.1.3
+    lxml 4.9.4
+    platformdirs 4.2.0
+    pycountry 23.12.11
+    PyYAML 6.0.1
+    requests 2.31.0
+    setuptools 58.1.0
+    six 1.16.0
+    wcwidth 0.2.13
+    weasyprint 61.2
+-->
+<link href="/a/www/www6s/staging/draft-ietf-regext-rdap-rir-search-09.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">/*
+
+  NOTE: Changes at the bottom of this file overrides some earlier settings.
+
+  Once the style has stabilized and has been adopted as an official RFC style,
+  this can be consolidated so that style settings occur only in one place, but
+  for now the contents of this file consists first of the initial CSS work as
+  provided to the RFC Formatter (xml2rfc) work, followed by itemized and
+  commented changes found necessary during the development of the v3
+  formatters.
+
+*/
+
+/* fonts */
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans'); /* Sans-serif */
+@import url('https://fonts.googleapis.com/css?family=Noto+Serif'); /* Serif (print) */
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono'); /* Monospace */
+
+:root {
+  --font-sans: 'Noto Sans', Arial, Helvetica, sans-serif;
+  --font-serif: 'Noto Serif', 'Times', 'Times New Roman', serif;
+  --font-mono: 'Roboto Mono', Courier, 'Courier New', monospace;
+}
+
+@viewport {
+  zoom: 1.0;
+}
+@-ms-viewport {
+  width: extend-to-zoom;
+  zoom: 1.0;
+}
+/* general and mobile first */
+html {
+}
+body {
+  max-width: 90%;
+  margin: 1.5em auto;
+  color: #222;
+  background-color: #fff;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  overflow-wrap: break-word;
+}
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  margin: 1em 0 0.5em;
+  font-weight: bold;
+  line-height: 1.3;
+}
+#title {
+  clear: both;
+  border-bottom: 1px solid #ddd;
+  margin: 0 0 0.5em 0;
+  padding: 1em 0 0.5em;
+}
+.author {
+  padding-bottom: 4px;
+}
+h1 {
+  font-size: 26px;
+  margin: 1em 0;
+}
+h2 {
+  font-size: 22px;
+  margin-top: -20px;  /* provide offset for in-page anchors */
+  padding-top: 33px;
+}
+h3 {
+  font-size: 18px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h4 {
+  font-size: 16px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h5, h6 {
+  font-size: 14px;
+}
+#n-copyright-notice {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+/* general structure */
+p {
+  padding: 0;
+  margin: 0 0 1em 0;
+  text-align: left;
+}
+div, span {
+  position: relative;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+svg[font-family~="serif" i], svg [font-family~="serif" i] {
+  font-family: var(--font-serif);
+}
+svg[font-family~="sans-serif" i], svg [font-family~="sans-serif" i] {
+  font-family: var(--font-sans);
+}
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  display: table;
+  border: none;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 1em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.ulBare, li.ulBare {
+  margin-left: 0em !important;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+/* 
+dl.nohang > dt {
+  float: none;
+}
+*/
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+
+/* links */
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #22e; /* Arlen: WCAG 2019 */
+}
+a[href]:hover {
+  background-color: #f2f2f2;
+}
+figcaption a[href],
+a[href].selfRef {
+  color: #222;
+}
+/* XXX probably not this:
+a.selfRef:hover {
+  background-color: transparent;
+  cursor: default;
+} */
+
+/* Figures */
+tt, code, pre {
+  background-color: #f9f9f9;
+  font-family: var(--font-mono);
+}
+pre {
+  border: 1px solid #eee;
+  margin: 0;
+  padding: 1em;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption {
+  font-style: italic;
+  margin: 0 0 1em 0;
+}
+@media screen {
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+    max-width: calc(100% - 22px);
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 1.2em 2em;
+}
+blockquote {
+  background-color: #f9f9f9;
+  color: #111; /* Arlen: WCAG 2019 */
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin: 1em 0;
+}
+blockquote > *:last-child {
+  margin-bottom: 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  border: 1px solid #eee;
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5em 0.75em;
+}
+th {
+  text-align: left;
+  background-color: #e9e9e9;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f5f5f5;
+}
+table caption {
+  font-style: italic;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+table p {
+  /* XXX to avoid bottom margin on table row signifiers. If paragraphs should
+     be allowed within tables more generally, it would be far better to select on a class. */
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  color: #666; /* Arlen: AHDJ 2019 */
+  text-decoration: none;
+  visibility: hidden;
+  user-select: none;
+  -ms-user-select: none;
+  -o-user-select:none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+@media screen {
+  aside:hover > a.pilcrow,
+  p:hover > a.pilcrow,
+  blockquote:hover > a.pilcrow,
+  div:hover > a.pilcrow,
+  li:hover > a.pilcrow,
+  pre:hover > a.pilcrow {
+    visibility: visible;
+  }
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: 0.9em;
+}
+#identifiers dt {
+  width: 3em;
+  clear: left;
+}
+#identifiers dd {
+  float: left;
+  margin-bottom: 0;
+}
+/* Fix PDF info block run off issue */
+@media print {
+  #identifiers dd {
+    float: none;
+  }
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #666; /* Arlen: WCAG 2019 */
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc  {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+nav.toc ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+nav.toc li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.refSubseries {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 600px) {
+  .index ul {
+    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+  }
+  .index ul ul {
+    -moz-column-count: 1;
+    -moz-column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  font-family: var(--font-sans);
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+
+/* temporary notes */
+.rfcEditorRemove::before {
+  position: absolute;
+  top: 0.2em;
+  right: 0.2em;
+  padding: 0.2em;
+  content: "The RFC Editor will remove this note";
+  color: #9e2a00; /* Arlen: WCAG 2019 */
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+}
+.rfcEditorRemove {
+  position: relative;
+  padding-top: 1.8em;
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  border-radius: 3px;
+}
+.cref {
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 1023px) {
+  body {
+    padding-top: 2em;
+  }
+  #title {
+    padding: 1em 0;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 20px;
+    margin-top: -18px;  /* provide offset for in-page anchors */
+    padding-top: 38px;
+  }
+  #identifiers dd {
+    max-width: 60%;
+  }
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background-color: inherit;
+    border-bottom: 1px solid #ccc;
+  }
+  #toc h2 {
+    margin: -1px 0 0 0;
+    padding: 4px 0 4px 6px;
+    padding-right: 1em;
+    min-width: 190px;
+    font-size: 1.1em;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 6px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 1024px) {
+  body {
+    max-width: 724px;
+    margin: 42px auto;
+    padding-left: 1.5em;
+    padding-right: 29em;
+  }
+  #toc {
+    position: fixed;
+    top: 42px;
+    right: 42px;
+    width: 25%;
+    margin: 0;
+    padding: 0 1em;
+    z-index: 1;
+  }
+  #toc h2 {
+    border-top: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 1em;
+    font-weight: normal;
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 0;
+    overflow: auto;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  .breakable pre {
+    break-inside: auto;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+/* This is commented out here, as the string-set: doesn't
+   pass W3C validation currently */
+/*
+.ears thead .left {
+  string-set: ears-top-left content();
+}
+
+.ears thead .center {
+  string-set: ears-top-center content();
+}
+
+.ears thead .right {
+  string-set: ears-top-right content();
+}
+
+.ears tfoot .left {
+  string-set: ears-bottom-left content();
+}
+
+.ears tfoot .center {
+  string-set: ears-bottom-center content();
+}
+
+.ears tfoot .right {
+  string-set: ears-bottom-right content();
+}
+*/
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+  /* The following is commented out here, but set appropriately by in code, as
+     the content depends on the document */
+  /*
+  @top-left {
+    content: 'Internet-Draft';
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-left {
+    content: string(ears-top-left);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-center {
+    content: string(ears-top-center);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-right {
+    content: string(ears-top-right);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @bottom-left {
+    content: string(ears-bottom-left);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-center {
+    content: string(ears-bottom-center);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-right {
+      content: '[Page ' counter(page) ']';
+      vertical-align: top;
+      border-top: solid 1px #ccc;
+  }
+  */
+
+}
+
+/* Changes introduced to fix issues found during implementation */
+/* Make sure links are clickable even if overlapped by following H* */
+a {
+  z-index: 2;
+}
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Leave room in document info to show Internet-Draft on one line */
+#identifiers dt {
+  width: 8em;
+}
+
+/* Don't waste quite as much whitespace between label and value in doc info */
+#identifiers dd {
+  margin-left: 1em;
+}
+
+/* Give floating toc a background color (needed when it's a div inside section */
+#toc {
+  background-color: white;
+}
+
+/* Make the collapsed ToC header render white on gray also when it's a link */
+@media screen and (max-width: 1023px) {
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+}
+
+/* Give the bottom of the ToC some whitespace */
+@media screen and (min-width: 1024px) {
+  #toc {
+    padding: 0 0 1em 1em;
+  }
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* prevent monospace from becoming overly large */
+tt, code, pre {
+  font-size: 95%;
+}
+
+/* Fix the height/width aspect for ascii art*/
+.sourcecode pre,
+.art-text pre {
+  line-height: 1.12;
+}
+
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin-right: 0.5em;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table td.text-left,
+table th.text-left {
+  text-align: left;
+}
+table td.text-center,
+table th.text-center {
+  text-align: center;
+}
+table td.text-right,
+table th.text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 30em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Provide table alignment support.  We can't use the alignX classes above
+   since they do unwanted things with caption and other styling. */
+table.right {
+ margin-left: auto;
+ margin-right: 0;
+}
+table.center {
+ margin-left: auto;
+ margin-right: auto;
+}
+table.left {
+ margin-left: 0;
+ margin-right: auto;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+caption a[href] {
+  color: #222;
+}
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+/* Tweak the invisible space above H* in order not to overlay links in text above */
+ h2 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 31px;
+ }
+ h3 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+ h4 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+/* Float artwork pilcrow to the right */
+@media screen {
+  .artwork a.pilcrow {
+    display: block;
+    line-height: 0.7;
+    margin-top: 0.15em;
+  }
+}
+/* Make pilcrows on dd visible */
+@media screen {
+  dd:hover > a.pilcrow {
+    visibility: visible;
+  }
+}
+/* Make the placement of figcaption match that of a table's caption
+   by removing the figure's added bottom margin */
+.alignLeft.art-text,
+.alignCenter.art-text,
+.alignRight.art-text {
+   margin-bottom: 0;
+}
+.alignLeft,
+.alignCenter,
+.alignRight {
+  margin: 1em 0 0 0;
+}
+/* In print, the pilcrow won't show on hover, so prevent it from taking up space,
+   possibly even requiring a new line */
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+/* Styling for the external metadata */
+div#external-metadata {
+  background-color: #eee;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  display: none;
+}
+div#internal-metadata {
+  padding: 0.5em;                       /* to match the external-metadata padding */
+}
+/* Styling for title RFC Number */
+h1#rfcnum {
+  clear: both;
+  margin: 0 0 -1em;
+  padding: 1em 0 0 0;
+}
+/* Make .olPercent look the same as <ol><li> */
+dl.olPercent > dd {
+  margin-bottom: 0.25em;
+  min-height: initial;
+}
+/* Give aside some styling to set it apart */
+aside {
+  border-left: 1px solid #ddd;
+  margin: 1em 0 1em 2em;
+  padding: 0.2em 2em;
+}
+aside > dl,
+aside > ol,
+aside > ul,
+aside > table,
+aside > p {
+  margin-bottom: 0.5em;
+}
+/* Additional page break settings */
+@media print {
+  figcaption, table caption {
+    page-break-before: avoid;
+  }
+}
+/* Font size adjustments for print */
+@media print {
+  body  { font-size: 10pt;      line-height: normal; max-width: 96%; }
+  h1    { font-size: 1.72em;    padding-top: 1.5em; } /* 1*1.2*1.2*1.2 */
+  h2    { font-size: 1.44em;    padding-top: 1.5em; } /* 1*1.2*1.2 */
+  h3    { font-size: 1.2em;     padding-top: 1.5em; } /* 1*1.2 */
+  h4    { font-size: 1em;       padding-top: 1.5em; }
+  h5, h6 { font-size: 1em;      margin: initial; padding: 0.5em 0 0.3em; }
+}
+/* Sourcecode margin in print, when there's no pilcrow */
+@media print {
+  .artwork,
+  .artwork > pre,
+  .sourcecode {
+    margin-bottom: 1em;
+  }
+}
+/* Avoid narrow tables forcing too narrow table captions, which may render badly */
+table {
+  min-width: 20em;
+}
+/* ol type a */
+ol.type-a { list-style-type: lower-alpha; }
+ol.type-A { list-style-type: upper-alpha; }
+ol.type-i { list-style-type: lower-roman; }
+ol.type-I { list-style-type: lower-roman; }
+/* Apply the print table and row borders in general, on request from the RPC,
+and increase the contrast between border and odd row background slightly */
+table {
+  border: 1px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+}
+tr {
+  break-inside: avoid;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f8f8f8;
+}
+/* Use style rules to govern display of the TOC. */
+@media screen and (max-width: 1023px) {
+  #toc nav { display: none; }
+  #toc.active nav { display: block; }
+}
+/* Add support for keepWithNext */
+.keepWithNext {
+  break-after: avoid-page;
+  break-after: avoid-page;
+}
+/* Add support for keepWithPrevious */
+.keepWithPrevious {
+  break-before: avoid-page;
+}
+/* Change the approach to avoiding breaks inside artwork etc. */
+figure, pre, table, .artwork, .sourcecode  {
+  break-before: auto;
+  break-after: auto;
+}
+/* Avoid breaks between <dt> and <dd> */
+dl {
+  break-before: auto;
+  break-inside: auto;
+}
+dt {
+  break-before: auto;
+  break-after: avoid-page;
+}
+dd {
+  break-before: avoid-page;
+  break-after: auto;
+  orphans: 3;
+  widows: 3
+}
+span.break, dd.break {
+  margin-bottom: 0;
+  min-height: 0;
+  break-before: auto;
+  break-inside: auto;
+  break-after: auto;
+}
+/* Undo break-before ToC */
+@media print {
+  #toc {
+    break-before: auto;
+  }
+}
+/* Text in compact lists should not get extra bottom margin space,
+   since that would makes the list not compact */
+ul.compact p, .ulCompact p,
+ol.compact p, .olCompact p {
+ margin: 0;
+}
+/* But the list as a whole needs the extra space at the end */
+section ul.compact,
+section .ulCompact,
+section ol.compact,
+section .olCompact {
+  margin-bottom: 1em;                    /* same as p not within ul.compact etc. */
+}
+/* The tt and code background above interferes with for instance table cell
+   backgrounds.  Changed to something a bit more selective. */
+tt, code {
+  background-color: transparent;
+}
+p tt, p code, li tt, li code {
+  background-color: #f8f8f8;
+}
+/* Tweak the pre margin -- 0px doesn't come out well */
+pre {
+   margin-top: 0.5px;
+}
+/* Tweak the compact list text */
+ul.compact, .ulCompact,
+ol.compact, .olCompact,
+dl.compact, .dlCompact {
+  line-height: normal;
+}
+/* Don't add top margin for nested lists */
+li > ul, li > ol, li > dl,
+dd > ul, dd > ol, dd > dl,
+dl > dd > dl {
+  margin-top: initial;
+}
+/* Elements that should not be rendered on the same line as a <dt> */
+/* This should match the element list in writer.text.TextWriter.render_dl() */
+dd > div.artwork:first-child,
+dd > aside:first-child,
+dd > figure:first-child,
+dd > ol:first-child,
+dd > div.sourcecode:first-child,
+dd > table:first-child,
+dd > ul:first-child {
+  clear: left;
+}
+/* fix for weird browser behaviour when <dd/> is empty */
+dt+dd:empty::before{
+  content: "\00a0";
+}
+/* Make paragraph spacing inside <li> smaller than in body text, to fit better within the list */
+li > p {
+  margin-bottom: 0.5em
+}
+/* Don't let p margin spill out from inside list items */
+li > p:last-of-type:only-child {
+  margin-bottom: 0;
+}
+</style>
+<link href="rfc-local.css" rel="stylesheet" type="text/css">
+<script type="application/javascript">async function addMetadata(){try{const e=document.styleSheets[0].cssRules;for(let t=0;t<e.length;t++)if(/#identifiers/.exec(e[t].selectorText)){const a=e[t].cssText.replace("#identifiers","#external-updates");document.styleSheets[0].insertRule(a,document.styleSheets[0].cssRules.length)}}catch(e){console.log(e)}const e=document.getElementById("external-metadata");if(e)try{var t,a="",o=function(e){const t=document.getElementsByTagName("meta");for(let a=0;a<t.length;a++)if(t[a].getAttribute("name")===e)return t[a].getAttribute("content");return""}("rfc.number");if(o){t="https://www.rfc-editor.org/rfc/rfc"+o+".json";try{const e=await fetch(t);a=await e.json()}catch(e){t=document.URL.indexOf("html")>=0?document.URL.replace(/html$/,"json"):document.URL+".json";const o=await fetch(t);a=await o.json()}}if(!a)return;e.style.display="block";const s="",d="https://datatracker.ietf.org/doc",n="https://datatracker.ietf.org/ipr/search",c="https://www.rfc-editor.org/info",l=a.doc_id.toLowerCase(),i=a.doc_id.slice(0,3).toLowerCase(),f=a.doc_id.slice(3).replace(/^0+/,""),u={status:"Status",obsoletes:"Obsoletes",obsoleted_by:"Obsoleted By",updates:"Updates",updated_by:"Updated By",see_also:"See Also",errata_url:"Errata"};let h="<dl style='overflow:hidden' id='external-updates'>";["status","obsoletes","obsoleted_by","updates","updated_by","see_also","errata_url"].forEach(e=>{if("status"==e){a[e]=a[e].toLowerCase();var t=a[e].split(" "),o=t.length,w="",p=1;for(let e=0;e<o;e++)p<o?w=w+r(t[e])+" ":w+=r(t[e]),p++;a[e]=w}else if("obsoletes"==e||"obsoleted_by"==e||"updates"==e||"updated_by"==e){var g,m="",b=1;g=a[e].length;for(let t=0;t<g;t++)a[e][t]&&(a[e][t]=String(a[e][t]).toLowerCase(),m=b<g?m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>, ":m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>",b++);a[e]=m}else if("see_also"==e){var y,L="",C=1;y=a[e].length;for(let t=0;t<y;t++)if(a[e][t]){a[e][t]=String(a[e][t]);var _=a[e][t].slice(0,3),v=a[e][t].slice(3).replace(/^0+/,"");L=C<y?"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>, ":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>, ":"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>",C++}a[e]=L}else if("errata_url"==e){var R="";R=a[e]?R+"<a href='"+a[e]+"'>Errata exist</a> | <a href='"+d+"/"+l+"'>Datatracker</a>| <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>":"<a href='"+d+"/"+l+"'>Datatracker</a> | <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>",a[e]=R}""!=a[e]?"Errata"==u[e]?h+=`<dt>More info:</dt><dd>${a[e]}</dd>`:h+=`<dt>${u[e]}:</dt><dd>${a[e]}</dd>`:"Errata"==u[e]&&(h+=`<dt>More info:</dt><dd>${a[e]}</dd>`)}),h+="</dl>",e.innerHTML=h}catch(e){console.log(e)}else console.log("Could not locate metadata <div> element");function r(e){return e.charAt(0).toUpperCase()+e.slice(1)}}window.removeEventListener("load",addMetadata),window.addEventListener("load",addMetadata);</script>
+</head>
+<body class="xml2rfc">
+<script src="metadata.min.js"></script>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">RDAP RIR Search</td>
+<td class="right">March 2024</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Harrison &amp; Singh</td>
+<td class="center">Expires 26 September 2024</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Internet Engineering Task Force</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-regext-rdap-rir-search-09</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2024-03-25" class="published">25 March 2024</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2024-09-26">26 September 2024</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">T. Harrison</div>
+<div class="org">APNIC</div>
+</div>
+<div class="author">
+      <div class="author-name">J. Singh</div>
+<div class="org">ARIN</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">RDAP RIR Search</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">
+
+            The Registration Data Access Protocol (RDAP) is used by
+            Regional Internet Registries (RIRs) and Domain Name
+            Registries (DNRs) to provide access to their resource
+            registration information.  The core specifications for
+            RDAP define basic search functionality, but there are
+            various IP and ASN-related search options provided by RIRs
+            via their Whois services for which there is no
+            corresponding RDAP functionality.  This document extends
+            RDAP to support those search options.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 26 September 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2024 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-conventions-used-in-this-do" class="internal xref">Conventions Used in This Document</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-basic-searches" class="internal xref">Basic Searches</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-path-segments" class="internal xref">Path Segments</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-ip-network-search" class="internal xref">IP Network Search</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-autonomous-system-number-se" class="internal xref">Autonomous System Number Search</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-relation-searches" class="internal xref">Relation Searches</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-path-segments-2" class="internal xref">Path Segments</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-relation-search" class="internal xref">Relation Search</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.1">
+                    <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="auto internal xref">3.2.1</a>.  <a href="#name-definitions" class="internal xref">Definitions</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.2">
+                    <p id="section-toc.1-1.3.2.2.2.2.1"><a href="#section-3.2.2" class="auto internal xref">3.2.2</a>.  <a href="#name-relations" class="internal xref">Relations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.2.2.1">
+                        <p id="section-toc.1-1.3.2.2.2.2.2.1.1"><a href="#section-3.2.2.1" class="auto internal xref">3.2.2.1</a>.  <a href="#name-single-result-searches" class="internal xref">Single-Result Searches</a></p>
+</li>
+                      <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.2.2.2">
+                        <p id="section-toc.1-1.3.2.2.2.2.2.2.1"><a href="#section-3.2.2.2" class="auto internal xref">3.2.2.2</a>.  <a href="#name-multiple-result-searches" class="internal xref">Multiple-Result Searches</a></p>
+</li>
+                    </ul>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-status" class="internal xref">Status</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-link-relations" class="internal xref">Link Relations</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-responding-to-searches" class="internal xref">Responding To Searches</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-single-result-searches-2" class="internal xref">Single-Result Searches</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-multiple-result-searches-2" class="internal xref">Multiple-Result Searches</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-reverse-search" class="internal xref">Reverse Search</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-rdap-conformance" class="internal xref">RDAP Conformance</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-operational-considerations" class="internal xref">Operational Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-rdap-extensions-registry" class="internal xref">RDAP Extensions Registry</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-link-relations-registry" class="internal xref">Link Relations Registry</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="auto internal xref">10.3</a>.  <a href="#name-rdap-reverse-search-registr" class="internal xref">RDAP Reverse Search Registry</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.4">
+                <p id="section-toc.1-1.10.2.4.1"><a href="#section-10.4" class="auto internal xref">10.4</a>.  <a href="#name-rdap-reverse-search-mapping" class="internal xref">RDAP Reverse Search Mapping Registry</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-implementation-status" class="internal xref">Implementation Status</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-apnic-rdap-implementation" class="internal xref">APNIC RDAP Implementation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-ripe-ncc-rdap-implementatio" class="internal xref">RIPE NCC RDAP Implementation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="auto internal xref">13</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
+                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="auto internal xref">13.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
+                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="auto internal xref">13.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">
+
+            The <span><a href="#RFC7480" class="internal xref">Registration Data Access
+            Protocol (RDAP)</a> [<a href="#RFC7480" class="cite xref">RFC7480</a>]</span> is used by Regional Internet
+            Registries (RIRs) and Domain Name Registries (DNRs) to
+            provide access to their resource registration information.
+            The core specifications for RDAP define basic search
+            functionality, but this is limited to domains,
+            nameservers, and entities.  No searches were defined for
+            IP networks or autonomous system numbers.  In an effort to
+            have RDAP reach feature parity with the existing RIR Whois
+            services in this respect, this document defines additional
+            search options for IP networks and autonomous system
+            numbers.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">
+            
+            While this document is in terms of RIRs and DNRs for the
+            sake of consistency with earlier RDAP documents such as <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span> and <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span>, the
+            functionality described here may be used by any RDAP
+            server operator that hosts Internet Number Resource (INR)
+            objects.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<div id="conventions">
+<section id="section-1.1">
+        <h3 id="name-conventions-used-in-this-do">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-conventions-used-in-this-do" class="section-name selfRef">Conventions Used in This Document</a>
+        </h3>
+<p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+            "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT
+            RECOMMENDED", "MAY", and "OPTIONAL" in this document are
+            to be interpreted as described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they appear in all
+            capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">Indentation and whitespace in examples are provided
+            only to illustrate element relationships, and are not a
+            REQUIRED feature of this protocol.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">"..." in examples is used as shorthand for elements
+            defined outside of this document.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+<section id="section-2">
+      <h2 id="name-basic-searches">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-basic-searches" class="section-name selfRef">Basic Searches</a>
+      </h2>
+<section id="section-2.1">
+        <h3 id="name-path-segments">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-path-segments" class="section-name selfRef">Path Segments</a>
+        </h3>
+<p id="section-2.1-1">
+
+                The new resource type path segments for basic search (similar to
+                the searches defined in <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span> and <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span>) are:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-2.1-2.1">
+            <p id="section-2.1-2.1.1">
+
+                        'ips': Used to identify an IP network search using
+                        a pattern to match one of a set of IP network
+                        attributes.<a href="#section-2.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-2.1-2.2">
+            <p id="section-2.1-2.2.1">
+
+                        'autnums': Used to identify an autonomous system
+                        number search using a pattern to match one of a
+                        set of autonomous system number attributes.<a href="#section-2.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-2.1-3">
+
+                A search pattern matches a value where it equals the
+                string representation of the value, or where it is a
+                match for the value in accordance with the use of the
+                asterisk ('*', US-ASCII value 0x2A) character for
+                partial string matching as defined in section 4.1 of
+                <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span>.  For most searches, '*' may
+                be used to match trailing characters only, and may
+                appear in a search only once: please see the
+                previously-mentioned section for a complete definition
+                of the relevant behaviour.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
+</section>
+<section id="section-2.2">
+        <h3 id="name-ip-network-search">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-ip-network-search" class="section-name selfRef">IP Network Search</a>
+        </h3>
+<p id="section-2.2-1">
+
+                Syntax: ips?handle=&lt;handle search pattern&gt;<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">
+
+                Syntax: ips?name=&lt;name search pattern&gt;<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">
+
+                Searches for IP network information by handle are
+                specified using the form:<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<p id="section-2.2-4">
+
+                ips?handle=XXXX<a href="#section-2.2-4" class="pilcrow">¶</a></p>
+<p id="section-2.2-5">
+
+                XXXX is a search pattern representing an IP network
+                identifier, the syntax for which is specific to the
+                registration provider.  The following URL would be
+                used to find information for IP networks with handles matching
+                the "NET-199*" pattern:<a href="#section-2.2-5" class="pilcrow">¶</a></p>
+<p id="section-2.2-6">
+
+                https://example.com/rdap/ips?handle=NET-199*<a href="#section-2.2-6" class="pilcrow">¶</a></p>
+<p id="section-2.2-7">
+
+                Searches for IP network information by name are
+                specified using the form:<a href="#section-2.2-7" class="pilcrow">¶</a></p>
+<p id="section-2.2-8">
+
+                ips?name=XXXX<a href="#section-2.2-8" class="pilcrow">¶</a></p>
+<p id="section-2.2-9">
+
+                XXXX is a search pattern representing an IP network
+                identifier that is assigned to the network
+                registration by the registration holder.  The
+                following URL would be used to find information for IP
+                networks with names matching the "NET-EXAMPLE-*" pattern:<a href="#section-2.2-9" class="pilcrow">¶</a></p>
+<p id="section-2.2-10">
+
+                https://example.com/rdap/ips?name=NET-EXAMPLE-*<a href="#section-2.2-10" class="pilcrow">¶</a></p>
+</section>
+<section id="section-2.3">
+        <h3 id="name-autonomous-system-number-se">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-autonomous-system-number-se" class="section-name selfRef">Autonomous System Number Search</a>
+        </h3>
+<p id="section-2.3-1">
+
+                Syntax: autnums?handle=&lt;handle search pattern&gt;<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">
+
+                Syntax: autnums?name=&lt;name search pattern&gt;<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.3-3">
+
+                Searches for autonomous system number information by
+                handle are specified using the form:<a href="#section-2.3-3" class="pilcrow">¶</a></p>
+<p id="section-2.3-4">
+
+                autnums?handle=XXXX<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+<p id="section-2.3-5">
+
+                XXXX is a search pattern representing an autonomous
+                system number identifier, the syntax for which is
+                specific to the registration provider.  The following
+                URL would be used to find information for autonomous
+                system numbers with handles matching the "AS1*" pattern:<a href="#section-2.3-5" class="pilcrow">¶</a></p>
+<p id="section-2.3-6">
+
+                https://example.com/rdap/autnums?handle=AS1*<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<p id="section-2.3-7">
+
+                Searches for autonomous system number information by
+                name are specified using the form:<a href="#section-2.3-7" class="pilcrow">¶</a></p>
+<p id="section-2.3-8">
+
+                autnums?name=XXXX<a href="#section-2.3-8" class="pilcrow">¶</a></p>
+<p id="section-2.3-9">
+
+                XXXX is a search pattern representing an autonomous
+                system number identifier that is assigned to the
+                autonomous system number registration by the
+                registration holder.  The following URL would be used
+                to find information for autonomous system numbers with
+                names matching the "ASN-EXAMPLE-*" pattern:<a href="#section-2.3-9" class="pilcrow">¶</a></p>
+<p id="section-2.3-10">
+
+                https://example.com/rdap/autnums?name=ASN-EXAMPLE-*<a href="#section-2.3-10" class="pilcrow">¶</a></p>
+</section>
+</section>
+<section id="section-3">
+      <h2 id="name-relation-searches">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-relation-searches" class="section-name selfRef">Relation Searches</a>
+      </h2>
+<p id="section-3-1">
+
+            <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span> contains example objects that
+            make use of the "up" link relation in order to simplify
+            the process of finding the parent object for a given
+            object.  This section defines searches for finding objects
+            and sets of objects with respect to their position within
+            a hierarchy.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<section id="section-3.1">
+        <h3 id="name-path-segments-2">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-path-segments-2" class="section-name selfRef">Path Segments</a>
+        </h3>
+<p id="section-3.1-1">
+
+                The variables used in the path segments include:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-3.1-2.1">
+            <p id="section-3.1-2.1.1">&lt;relation&gt;: A relation type, as defined
+                    in Section 3.2.2 of this document.<a href="#section-3.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-2.2">
+            <p id="section-3.1-2.2.1">&lt;IP address&gt;: An IP address, as defined in
+                    Section 3.1.1 of <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span>.<a href="#section-3.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-2.3">
+            <p id="section-3.1-2.3.1">&lt;CIDR prefix&gt;: The first address of a CIDR
+                    block, as defined in
+                    Section 3.1.1 of <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span>.<a href="#section-3.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-2.4">
+            <p id="section-3.1-2.4.1">&lt;CIDR length&gt;: The prefix length for a
+                    CIDR block, as defined in Section 3.1.1 of <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span>.<a href="#section-3.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-2.5">
+            <p id="section-3.1-2.5.1">&lt;domain name&gt;: A fully-qualified domain
+                    name, as defined in Section 3.1.3 of <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span>.<a href="#section-3.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-2.6">
+            <p id="section-3.1-2.6.1">&lt;autonomous system number or range&gt;: An
+                    autonomous system number, as defined in Section
+                    3.1.2 of <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span>, or two such
+                    numbers separated by a single hyphen ('-',
+                    US-ASCII value 0x2D), where the second number is
+                    greater than the first.<a href="#section-3.1-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-2.7">
+            <p id="section-3.1-2.7.1">&lt;resource type search path segment&gt;: A
+                    search path segment corresponding to an Internet
+                    Number Resource (INR) object class (i.e. an IP
+                    network address or range, autonomous system number
+                    or number range, or reverse domain name).<a href="#section-3.1-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-2.8">
+            <p id="section-3.1-2.8.1">&lt;object value&gt;: a value used to identify
+                    an object for the purposes of a relation search
+                    relative to that object.  One of &lt;IP
+                    address&gt;, &lt;CIDR prefix&gt; and &lt;CIDR
+                    length&gt; pair, &lt;domain name&gt;, or
+                    &lt;autonomous system number or range&gt;,
+                    depending on the type of search that is being
+                    performed.<a href="#section-3.1-2.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-2.9">
+            <p id="section-3.1-2.9.1">&lt;status&gt;: an object status value, as
+                    defined in Section 4.6 of <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span>.<a href="#section-3.1-2.9.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.1-3">
+
+                The new resource type path segments for relation
+                search (similar to the searches defined in <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span> and <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span>)
+                are:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-3.1-4.1">
+            <p id="section-3.1-4.1.1">
+
+                        'ips/rirSearch1/&lt;relation&gt;/&lt;IP address&gt;':
+                        Used to identify an IP network search using a
+                        relation and an address to match a set of
+                        IP networks.<a href="#section-3.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-4.2">
+            <p id="section-3.1-4.2.1">
+
+                        'ips/rirSearch1/&lt;relation&gt;/&lt;CIDR prefix&gt;/&lt;CIDR length&gt;':
+                        Used to identify an IP network search using a
+                        relation and a range to match a set of IP
+                        networks.<a href="#section-3.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-4.3">
+            <p id="section-3.1-4.3.1">
+
+                        'autnums/rirSearch1/&lt;relation&gt;/&lt;autonomous system number or range&gt;':
+                        Used to identify an autonomous system number
+                        search using a relation and a single ASN or an
+                        ASN range to match a set of ASN objects.<a href="#section-3.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.1-4.4">
+            <p id="section-3.1-4.4.1">
+
+                        'domains/rirSearch1/&lt;relation&gt;/&lt;domain name&gt;':
+                        Used to identify a reverse domain search using
+                        a relation and a reverse domain name to match
+                        a set of reverse domains.<a href="#section-3.1-4.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+<section id="section-3.2">
+        <h3 id="name-relation-search">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-relation-search" class="section-name selfRef">Relation Search</a>
+        </h3>
+<p id="section-3.2-1">
+
+                Syntax: &lt;resource type search path segment&gt;/rirSearch1/&lt;relation&gt;/&lt;object value&gt;[?status=&lt;status&gt;]<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">
+
+                The relation searches defined in this document rely on
+                the syntax described above.  Each search works in the
+                same way for each object class.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<section id="section-3.2.1">
+          <h4 id="name-definitions">
+<a href="#section-3.2.1" class="section-number selfRef">3.2.1. </a><a href="#name-definitions" class="section-name selfRef">Definitions</a>
+          </h4>
+<p id="section-3.2.1-1">
+    
+                    An INR object value may have a "parent" object and
+                    one or more "child" objects.  The "parent" object
+                    is the next-least-specific object that exists in
+                    the relevant registry, while the "child" objects
+                    are the next-most-specific objects that exist in
+                    the relevant registry.  For example, for a
+                    registry with the following seven IP network
+                    objects:<a href="#section-3.2.1-1" class="pilcrow">¶</a></p>
+<span id="name-example-registry-objects"></span><div id="registry-objects">
+<figure id="figure-1">
+            <div class="lang-drawing sourcecode" id="section-3.2.1-2.1">
+<pre>
+                        +--------------+
+                        | 192.0.2.0/24 |
+                        +--------------+
+                           /        \
+              +--------------+    +----------------+
+              | 192.0.2.0/25 |    | 192.0.2.128/25 |
+              +--------------+    +----------------+
+                 /                   /          \
+     +--------------+   +----------------+  +----------------+
+     | 192.0.2.0/28 |   | 192.0.2.128/26 |  | 192.0.2.192/26 |
+     +--------------+   +----------------+  +----------------+
+        /
+ +--------------+
+ | 192.0.2.0/32 |
+ +--------------+
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-example-registry-objects" class="selfRef">Example registry objects</a>
+            </figcaption></figure>
+</div>
+<p id="section-3.2.1-3">
+    
+                    the INR object value to parent/child object
+                    relationships are:<a href="#section-3.2.1-3" class="pilcrow">¶</a></p>
+<span id="name-parent-objects"></span><div id="parent">
+<table class="center" id="table-1">
+            <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-parent-objects" class="selfRef">Parent objects</a>
+            </caption>
+<thead>
+              <tr>
+                <th class="text-left" rowspan="1" colspan="1">INR object value</th>
+                <th class="text-left" rowspan="1" colspan="1">Parent object</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/32</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/28</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/28</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.64/26</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/26</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/25</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.192/26</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/25</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/25</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+            </tbody>
+          </table>
+</div>
+<span id="name-child-objects"></span><div id="children">
+<table class="center" id="table-2">
+            <caption>
+<a href="#table-2" class="selfRef">Table 2</a>:
+<a href="#name-child-objects" class="selfRef">Child objects</a>
+            </caption>
+<thead>
+              <tr>
+                <th class="text-left" rowspan="1" colspan="1">INR object value</th>
+                <th class="text-left" rowspan="1" colspan="1">Child objects</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25, 192.0.2.128/25</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/28</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/25</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/26, 192.0.2.192/26</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.64/26</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/26</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.192/26</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/28</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/32</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/32</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+            </tbody>
+          </table>
+</div>
+<p id="section-3.2.1-6">
+
+                    (INR object values do not necessarily correspond
+                    to registry objects, because users can provide
+                    arbitrary object values as input to the searches
+                    defined in this document.)<a href="#section-3.2.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-7">
+    
+                    Similarly to the parent/child object
+                    relationships, each INR object value may have a
+                    "top" object, being the least-specific covering
+                    object that exists in the registry, and one or
+                    more "bottom" objects, being the most-specific
+                    objects that entirely cover the INR object value
+                    when taken together.  Given the registry defined
+                    in the previous paragraph, the top and bottom
+                    object relationships are:<a href="#section-3.2.1-7" class="pilcrow">¶</a></p>
+<span id="name-top-objects"></span><div id="top">
+<table class="center" id="table-3">
+            <caption>
+<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#name-top-objects" class="selfRef">Top objects</a>
+            </caption>
+<thead>
+              <tr>
+                <th class="text-left" rowspan="1" colspan="1">INR object value</th>
+                <th class="text-left" rowspan="1" colspan="1">Top object</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/32</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/28</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.64/26</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/26</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.192/26</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/25</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+            </tbody>
+          </table>
+</div>
+<span id="name-bottom-objects"></span><div id="bottom">
+<table class="center" id="table-4">
+            <caption>
+<a href="#table-4" class="selfRef">Table 4</a>:
+<a href="#name-bottom-objects" class="selfRef">Bottom objects</a>
+            </caption>
+<thead>
+              <tr>
+                <th class="text-left" rowspan="1" colspan="1">INR object value</th>
+                <th class="text-left" rowspan="1" colspan="1">Bottom objects</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/24</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25, 192.0.2.0/28, 192.0.2.0/32, 192.0.2.128/26, 192.0.2.192/26</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25, 192.0.2.0/28, 192.0.2.0/32</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/25</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/26, 192.0.2.192/26</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.64/26</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.128/26</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.192/26</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/28</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/28, 192.0.2.0/32</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/31</td>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/28, 192.0.2.0/32</td>
+              </tr>
+              <tr>
+                <td class="text-left" rowspan="1" colspan="1">192.0.2.0/32</td>
+                <td class="text-left" rowspan="1" colspan="1">N/A</td>
+              </tr>
+            </tbody>
+          </table>
+</div>
+<p id="section-3.2.1-10">
+   
+                    If there are no more-specific objects for a given
+                    INR object value, then the set of bottom objects
+                    for that INR object value will be empty.
+                    192.0.2.0/32 is an example of such an INR object
+                    value.<a href="#section-3.2.1-10" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-11">
+
+                    It is not necessarily the case that the bottom
+                    objects for a given INR object value will be
+                    disjoint.  For example, 192.0.2.0/28's bottom
+                    objects are 192.0.2.0/28 and 192.0.2.0/32.
+                    192.0.2.0/32 is included because it is one of the 
+                    most-specific objects (i.e. an object at the bottom
+                    of the object hierarchy) for 192.0.2.0/28, while
+                    192.0.2.0/28 itself is included because it is the
+                    most-specific object for the other addresses
+                    within the range (i.e. those aside from
+                    192.0.2.0/32).<a href="#section-3.2.1-11" class="pilcrow">¶</a></p>
+<p id="section-3.2.1-12">
+
+                    The bottom objects for a given INR object value
+                    may include an object that is less-specific than
+                    that INR object value.  For example, 192.0.2.0/31
+                    is an INR object value that has a more-specific
+                    object, being 192.0.2.0/32, so the set of bottom
+                    objects must include at least that object.  The
+                    most-specific object that covers the residual
+                    (i.e. 192.0.2.1/32) is 192.0.2.0/28, so it is
+                    included in the results as well.<a href="#section-3.2.1-12" class="pilcrow">¶</a></p>
+</section>
+<section id="section-3.2.2">
+          <h4 id="name-relations">
+<a href="#section-3.2.2" class="section-number selfRef">3.2.2. </a><a href="#name-relations" class="section-name selfRef">Relations</a>
+          </h4>
+<section id="section-3.2.2.1">
+            <h5 id="name-single-result-searches">
+<a href="#section-3.2.2.1" class="section-number selfRef">3.2.2.1. </a><a href="#name-single-result-searches" class="section-name selfRef">Single-Result Searches</a>
+            </h5>
+<section id="section-3.2.2.1.1">
+              <h6 id="name-up">
+<a href="#section-3.2.2.1.1" class="section-number selfRef">3.2.2.1.1. </a><a href="#name-up" class="section-name selfRef">"up"</a>
+              </h6>
+<p id="section-3.2.2.1.1-1">
+
+                            If the server receives a search containing the
+                            relation value "up", it will return the parent
+                            object for the specified INR object value as
+                            though that object had been requested directly.  If
+                            no such object exists, it will respond with a
+                            HTTP 404 (Not Found) <span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span>
+                            search response.<a href="#section-3.2.2.1.1-1" class="pilcrow">¶</a></p>
+</section>
+<section id="section-3.2.2.1.2">
+              <h6 id="name-top">
+<a href="#section-3.2.2.1.2" class="section-number selfRef">3.2.2.1.2. </a><a href="#name-top" class="section-name selfRef">"top"</a>
+              </h6>
+<p id="section-3.2.2.1.2-1">
+
+                            If the server receives a search containing the
+                            relation value "top", it will return the top
+                            object for the specified INR object value
+                            as though that object had been requested
+                            directly.  If
+                            no such object exists, it will respond
+                            with an HTTP 404 (Not Found) <span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span> search response.<a href="#section-3.2.2.1.2-1" class="pilcrow">¶</a></p>
+</section>
+</section>
+<section id="section-3.2.2.2">
+            <h5 id="name-multiple-result-searches">
+<a href="#section-3.2.2.2" class="section-number selfRef">3.2.2.2. </a><a href="#name-multiple-result-searches" class="section-name selfRef">Multiple-Result Searches</a>
+            </h5>
+<section id="section-3.2.2.2.1">
+              <h6 id="name-down">
+<a href="#section-3.2.2.2.1" class="section-number selfRef">3.2.2.2.1. </a><a href="#name-down" class="section-name selfRef">"down"</a>
+              </h6>
+<p id="section-3.2.2.2.1-1">
+
+                            If the server receives a search containing the
+                            relation value "down", it will return the
+                            child objects for the specified INR object
+                            value.  If no such objects exist, it will
+                            return an empty search response.  Per the
+                            definitions section, this includes only
+                            immediate child objects.<a href="#section-3.2.2.2.1-1" class="pilcrow">¶</a></p>
+</section>
+<section id="section-3.2.2.2.2">
+              <h6 id="name-bottom">
+<a href="#section-3.2.2.2.2" class="section-number selfRef">3.2.2.2.2. </a><a href="#name-bottom" class="section-name selfRef">"bottom"</a>
+              </h6>
+<p id="section-3.2.2.2.2-1">
+
+                            If the server receives a search containing the
+                            relation value "bottom", it will return the
+                            bottom objects for the specified INR object
+                            value.  If no such objects exist, it will
+                            return an empty search response.<a href="#section-3.2.2.2.2-1" class="pilcrow">¶</a></p>
+</section>
+</section>
+</section>
+</section>
+<section id="section-3.3">
+        <h3 id="name-status">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-status" class="section-name selfRef">Status</a>
+        </h3>
+<p id="section-3.3-1">
+
+                If the "status" argument is provided, then response
+                processing will proceed as though all objects without
+                the specified status had first been removed from the
+                database.  For example, if the registry objects from
+                section 3.2.1 had the following statuses:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<span id="name-statuses"></span><div id="statuses">
+<table class="center" id="table-5">
+          <caption>
+<a href="#table-5" class="selfRef">Table 5</a>:
+<a href="#name-statuses" class="selfRef">Statuses</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Object</th>
+              <th class="text-left" rowspan="1" colspan="1">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">192.0.2.0/25</td>
+              <td class="text-left" rowspan="1" colspan="1">active</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">192.0.2.128/25</td>
+              <td class="text-left" rowspan="1" colspan="1">inactive</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">192.0.2.128/26</td>
+              <td class="text-left" rowspan="1" colspan="1">active</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">192.0.2.192/26</td>
+              <td class="text-left" rowspan="1" colspan="1">active</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+<p id="section-3.3-3">
+
+                then a server receiving a "down" search request with
+                the INR object value 192.0.2.0/24 and a "status"
+                argument of "active" would return the objects
+                192.0.2.0/25, 192.0.2.128/26, and 192.0.2.192/26.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">
+
+                Status filtering is useful, for example, where the
+                client is trying to find the delegation from an RIR to
+                an RIR account holder: by using the "top" relation
+                with a "status" of "active", the delegation from IANA
+                to the RIR will be ignored, and the client will
+                receive the delegation from the RIR to the account
+                holder in the response instead.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-5">
+
+                By default, any valid status value may be used for
+                status filtering.  Server operators MAY opt not to
+                support "status" filtering for the "down" and "bottom"
+                link relations, in which case the server should
+                respond with an HTTP 501 (Not Implemented) <span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span> response code if it receives such
+                a request.  Server operators MAY also opt not to
+                support "status" filtering for values other than
+                "active" for the "up" and "top" link relations, in
+                which case the server should respond with an HTTP 501
+                (Not Implemented) <span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span> response
+                code if it receives such a request.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+</section>
+<section id="section-3.4">
+        <h3 id="name-link-relations">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-link-relations" class="section-name selfRef">Link Relations</a>
+        </h3>
+<p id="section-3.4-1">
+
+                Each of the relations defined in section 3.2.2 has a
+                corresponding link relation that can be used for a
+                link object contained within another RDAP object.
+                When constructing these link objects, the server MUST
+                use the corresponding search URL for the link target,
+                or a URL that yields the same response as for the
+                corresponding search as at the time of the request.
+                The following is an elided example of a response that
+                makes use of those link relations:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<span id="name-example-links"></span><div id="example-links">
+<figure id="figure-2">
+          <div class="alignCenter art-ascii-art art-text artwork" id="section-3.4-2.1">
+<pre>
+{
+  "startAddress": "192.0.2.0",
+  "endAddress": "192.0.2.127",
+  ...
+  "links": [
+    ...,
+    {
+      "value": "https://example.com/rdap/ip/192.0.2.0/25",
+      "rel": "up",
+      "href": "https://example.com/rdap/ips/rirSearch1/up/192.0.2.0/25",
+      "type": "application/rdap+json"
+    },
+    {
+      "value": "https://example.com/rdap/ip/192.0.2.0/25",
+      "rel": "down",
+      "href": "https://example.com/rdap/ips/rirSearch1/down/192.0.2.0/25",
+      "type": "application/rdap+json"
+    },
+    {
+      "value": "https://example.com/rdap/ip/192.0.2.0/25",
+      "rel": "top",
+      "href": "https://example.com/rdap/ips/rirSearch1/top/192.0.2.0/25",
+      "type": "application/rdap+json"
+    },
+    {
+      "value": "https://example.com/rdap/ip/192.0.2.0/25",
+      "rel": "bottom",
+      "href": "https://example.com/rdap/ips/rirSearch1/bottom/192.0.2.0/25",
+      "type": "application/rdap+json"
+    }
+  ]
+}
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-example-links" class="selfRef">Example links</a>
+          </figcaption></figure>
+</div>
+<p id="section-3.4-3">
+
+                Two additional link relations are defined that
+                correspond to relation searches with a "status" of
+                "active": "up-active" and "top-active".  No other
+                status-specific link relations are defined, because
+                the only known use cases for status filtering involve
+                the "up" and "top" relations and the "active" status.
+                The following is an elided example of a response that
+                makes use of those link relations:<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<span id="name-example-status-links"></span><div id="example-status-links">
+<figure id="figure-3">
+          <div class="alignCenter art-ascii-art art-text artwork" id="section-3.4-4.1">
+<pre>
+{
+  "startAddress": "192.0.2.0",
+  "endAddress": "192.0.2.127",
+  ...
+  "links": [
+    ...,
+    {
+      "value": "https://example.com/rdap/ip/192.0.2.0/25",
+      "rel": "up-active",
+      "href":
+        "https://example.com/rdap/ips/rirSearch1/up/192.0.2.0/25?status=active",
+      "type": "application/rdap+json"
+    },
+    {
+      "value": "https://example.com/rdap/ip/192.0.2.0/25",
+      "rel": "top-active",
+      "href":
+        "https://example.com/rdap/ips/rirSearch1/top/192.0.2.0/25?status=active",
+      "type": "application/rdap+json"
+    }
+  ]
+}
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-example-status-links" class="selfRef">Example status links</a>
+          </figcaption></figure>
+</div>
+<p id="section-3.4-5">
+
+                Since the "top" and "up" link relations resolve either
+                to a single object or to an HTTP 404 (Not Found) <span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span> response,
+                it is possible for a server to use a lookup URL in
+                the "href" attribute in the link object.  The
+                following is an elided example of a response that uses
+                this approach:<a href="#section-3.4-5" class="pilcrow">¶</a></p>
+<span id="name-example-single-result-links"></span><div id="example-object-links">
+<figure id="figure-4">
+          <div class="alignCenter art-ascii-art art-text artwork" id="section-3.4-6.1">
+<pre>
+{
+  "startAddress": "192.0.2.0",
+  "endAddress": "192.0.2.127",
+  ...
+  "links": [
+    ...,
+    {
+      "value": "https://example.com/rdap/ip/192.0.2.0/25",
+      "rel": "up",
+      "href": "https://example.com/rdap/ip/192.0.2.0/24",
+      "type": "application/rdap+json"
+    }
+  ]
+}
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-example-single-result-links" class="selfRef">Example single-result links</a>
+          </figcaption></figure>
+</div>
+<p id="section-3.4-7">
+
+                This section mandates specific behaviour for the "up"
+                link relation, but does not define that link relation
+                (see <span>[<a href="#RFC8288" class="cite xref">RFC8288</a>]</span>).  This is acceptable,
+                because this behaviour:<a href="#section-3.4-7" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-3.4-8.1">
+            <p id="section-3.4-8.1.1">does not conflict with the current description
+                    of the link relation; and<a href="#section-3.4-8.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-3.4-8.2">
+            <p id="section-3.4-8.2.1">is not generally applicable, but instead
+                    limited to the context of RDAP INR objects
+                    only.<a href="#section-3.4-8.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.4-9">
+
+                Use of these link relations in responses is OPTIONAL.
+                The absence in a response of a link for a specific
+                relation does not necessarily mean that the
+                corresponding search will return no results.<a href="#section-3.4-9" class="pilcrow">¶</a></p>
+</section>
+</section>
+<section id="section-4">
+      <h2 id="name-responding-to-searches">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-responding-to-searches" class="section-name selfRef">Responding To Searches</a>
+      </h2>
+<section id="section-4.1">
+        <h3 id="name-single-result-searches-2">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-single-result-searches-2" class="section-name selfRef">Single-Result Searches</a>
+        </h3>
+<p id="section-4.1-1">
+
+                The "up" and "top" relations are single-result
+                searches.  When processing these searches, if there is
+                a result for the search, the server returns that
+                object as though it were requested directly via a
+                lookup URL (see section 3.1 of <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span>).  If there is no result for the search, the server
+                returns an HTTP 404 (Not Found) <span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span> response code.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+</section>
+<section id="section-4.2">
+        <h3 id="name-multiple-result-searches-2">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-multiple-result-searches-2" class="section-name selfRef">Multiple-Result Searches</a>
+        </h3>
+<p id="section-4.2-1">
+
+                The "down" and "bottom" relations are multiple-result
+                searches.  As with <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span>,
+                responses for these searches take the form of an array
+                of object instances, where each instance is an
+                appropriate object class for the search (i.e., a
+                search beginning with /ips yields an array of IP
+                network object instances, and a search beginning with
+                /autnums yields an array of autonomous system number
+                object instances).  The IP network object and
+                autonomous system number object classes are defined in
+                sections 5.4 and 5.5 of <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span>.
+                The object instance arrays are contained within the
+                response object.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">
+
+                The names of the arrays are as follows:<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-4.2-3.1">
+            <p id="section-4.2-3.1.1">
+
+                        for /ips searches, the array is "ipSearchResults"; and<a href="#section-4.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal ulEmpty" id="section-4.2-3.2">
+            <p id="section-4.2-3.2.1">
+
+                        for /autnums searches, the array is "autnumSearchResults".<a href="#section-4.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.2-4">
+
+                The following is an elided example of a response to an IP
+                network search:<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<span id="name-ip-network-search-response"></span><div id="ip-network-search-response">
+<figure id="figure-5">
+          <div class="lang-drawing sourcecode" id="section-4.2-5.1">
+<pre>
+{
+  "rdapConformance": [ "rdap_level_0", "rirSearch1",
+                       "ips", "ipSearchResults", ... ],
+  ...
+  "ipSearchResults": [
+    {
+      "objectClassName": "ip network",
+      "handle": "XXXX-RIR",
+      "startAddress": "192.0.2.0",
+      "endAddress": "192.0.2.127",
+      ...
+    },
+    {
+      "objectClassName": "ip network",
+      "handle": "YYYY-RIR",
+      "startAddress": "192.0.2.0",
+      "endAddress": "192.0.2.255",
+      ...
+    }
+  ]
+}
+</pre>
+</div>
+<figcaption><a href="#figure-5" class="selfRef">Figure 5</a>:
+<a href="#name-ip-network-search-response" class="selfRef">IP network search response</a>
+          </figcaption></figure>
+</div>
+<p id="section-4.2-6">
+
+                The following is an elided example of a response to an
+                autonomous system number search:<a href="#section-4.2-6" class="pilcrow">¶</a></p>
+<span id="name-asn-search-response"></span><div id="asn-search-response">
+<figure id="figure-6">
+          <div class="lang-drawing sourcecode" id="section-4.2-7.1">
+<pre>
+{
+  "rdapConformance": [ "rdap_level_0", "rirSearch1",
+                       "autnums", "autnumSearchResults", ... ],
+  ...
+  "autnumSearchResults": [
+    {
+      "objectClassName": "autnum",
+      "handle": "XXXX-RIR",
+      "startAutnum": 64496,
+      "endAutnum": 64496,
+      ...
+    },
+    {
+      "objectClassName": "autnum",
+      "handle": "YYYY-RIR",
+      "startAutnum": "64497",
+      "endAutnum": "64497",
+      ...
+    }
+  ]
+}
+</pre>
+</div>
+<figcaption><a href="#figure-6" class="selfRef">Figure 6</a>:
+<a href="#name-asn-search-response" class="selfRef">ASN search response</a>
+          </figcaption></figure>
+</div>
+<p id="section-4.2-8">
+
+                Responses for relation searches for reverse domain objects
+                have the same form as for a standard domain search
+                response, per <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span>.<a href="#section-4.2-8" class="pilcrow">¶</a></p>
+<p id="section-4.2-9">
+
+                If the search can be processed by the server, but
+                there are no results for the search, then the server
+                returns an HTTP 200 (OK) <span>[<a href="#RFC9110" class="cite xref">RFC9110</a>]</span>
+                response code, with the body of the response
+                containing an empty results array.<a href="#section-4.2-9" class="pilcrow">¶</a></p>
+</section>
+</section>
+<section id="section-5">
+      <h2 id="name-reverse-search">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-reverse-search" class="section-name selfRef">Reverse Search</a>
+      </h2>
+<p id="section-5-1">
+
+            RDAP reverse search is defined by <span>[<a href="#I-D.ietf-regext-rdap-reverse-search" class="cite xref">I-D.ietf-regext-rdap-reverse-search</a>]</span>.  That
+            document limits reverse search to domains, nameservers,
+            and entities.  This document extends reverse search to
+            cover IP networks and autonomous system numbers as well.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">
+
+            If a server receives a reverse search query with a
+            searchable resource type (per the definition of that term
+            in <span>[<a href="#I-D.ietf-regext-rdap-reverse-search" class="cite xref">I-D.ietf-regext-rdap-reverse-search</a>]</span>)
+            of "ips", then the reverse search will be performed on the
+            IP network objects from its data store.  Similarly, if a
+            server receives a reverse search query with a searchable
+            resource type of "autnums", then the reverse search will
+            be performed on the autonomous system number objects from
+            its data store.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">
+
+            Additionally, <a href="#IANA" class="auto internal xref">Section 10</a> includes requests to
+            register new entries for IP network and autonomous system
+            number searches in the RDAP Reverse Search and RDAP
+            Reverse Search Mapping IANA registries.<a href="#section-5-3" class="pilcrow">¶</a></p>
+</section>
+<section id="section-6">
+      <h2 id="name-rdap-conformance">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-rdap-conformance" class="section-name selfRef">RDAP Conformance</a>
+      </h2>
+<p id="section-6-1">
+
+            A server that supports the functionality specified in this
+            document MUST include additional string literals in the
+            rdapConformance array of its responses, in accordance with
+            the following:<a href="#section-6-1" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-6-2.1">
+          <p id="section-6-2.1.1">any response that includes an IP network basic
+                search link, an IP network relation search link, or an IP
+                network reverse search link, includes the "rirSearch1"
+                and "ips" literals;<a href="#section-6-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal ulEmpty" id="section-6-2.2">
+          <p id="section-6-2.2.1">any response for an IP network basic search
+                request, an IP network relation search request, or an
+                IP network reverse search request includes the
+                "rirSearch1", "ips", and "ipSearchResults"
+                literals;<a href="#section-6-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal ulEmpty" id="section-6-2.3">
+          <p id="section-6-2.3.1">any response that includes an ASN basic search
+                link, an ASN relation search link, or an ASN reverse
+                search link includes the "rirSearch1" and "autnums"
+                literals;<a href="#section-6-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal ulEmpty" id="section-6-2.4">
+          <p id="section-6-2.4.1">any response for an ASN basic search request, an
+                ASN relation search request, or an ASN reverse search
+                request includes the "rirSearch1", "autnums", and
+                "autnumSearchResults" literals;<a href="#section-6-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal ulEmpty" id="section-6-2.5">
+          <p id="section-6-2.5.1">any response that includes a domain relation search
+                link includes the "rirSearch1" literal;<a href="#section-6-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal ulEmpty" id="section-6-2.6">
+          <p id="section-6-2.6.1">any response for a domain relation search request
+                includes the "rirSearch1" literal; and<a href="#section-6-2.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal ulEmpty" id="section-6-2.7">
+          <p id="section-6-2.7.1">a response to a "/help" request includes the
+                "rirSearch1", "ips", "ipSearchResults", "autnums", and
+                "autnumSearchResults" literals.<a href="#section-6-2.7.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-6-3">
+
+            Although responses will generally not include all of the
+            rdapConformance string literals defined in this document,
+            that is not meant to imply that a server can support only
+            a portion of the functionality defined in this document.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">
+
+            The "ips", "autnums", "ipSearchResults", and
+            "autnumSearchResults" extension identifiers are included
+            here due to the requirements set out in  <span>[<a href="#RFC7480" class="cite xref">RFC7480</a>]</span>, <span>[<a href="#RFC9082" class="cite xref">RFC9082</a>]</span>, and <span>[<a href="#RFC9083" class="cite xref">RFC9083</a>]</span>.  These requirements are that an RDAP
+            extension identifier be used as a prefix in new path
+            segments and JSON members introduced by the extension, and
+            those strings are used as such as part of the basic
+            searches defined in this document.  Furthermore, using
+            these strings as path segments helps to increase
+            consistency among the basic searches for the core RDAP
+            object classes.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">
+
+            As with the other core object classes (entity, domain, and
+            nameserver), other documents may define additional reverse
+            searches with IP networks and ASNs as the searchable
+            resource type by registering those in the IANA RDAP
+            reverse search registries.  Because a given extension
+            identifier must correspond to a single extension, though,
+            any document making use of IP networks or ASNs as the
+            searchable resource type must also implement the
+            functionality described in this document.<a href="#section-6-5" class="pilcrow">¶</a></p>
+</section>
+<section id="section-7">
+      <h2 id="name-operational-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-operational-considerations" class="section-name selfRef">Operational Considerations</a>
+      </h2>
+<p id="section-7-1">
+
+            When using a link object for a single-result search, a
+            server may replace a search URL with a lookup URL, because
+            the behaviour of the lookup URL is the same as for the
+            search URL as at the time when the response is generated.
+            One difference between these approaches is that when using
+            the lookup URL, the server is effectively performing the
+            search on behalf of the client as at the time of response
+            generation.  If there is no change to the relevant
+            database state between the time when the original response
+            is generated and the time when the client resolves the
+            link relation target, then the search URL and the lookup
+            URL will lead to the same result.  However, if there is a
+            change to the relevant database state, then the lookup URL
+            may lead to a different result from that of the search
+            URL.  Server operators should consider which type of URL
+            will be more effective for their clients when implementing
+            this specification.<a href="#section-7-1" class="pilcrow">¶</a></p>
+</section>
+<section id="section-8">
+      <h2 id="name-privacy-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+      </h2>
+<p id="section-8-1">
+
+            The search functionality defined in this document may
+            affect the privacy of entities in the registry (and
+            elsewhere) in various ways: see <span>[<a href="#RFC6973" class="cite xref">RFC6973</a>]</span>
+            for a general treatment of privacy in protocol
+            specifications.  Server operators should be aware of the
+            tradeoffs that result from implementation of this
+            functionality.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">
+
+            Many jurisdictions have laws or regulations that restrict
+            the use of "Personal Data", per the definition in <span>[<a href="#RFC6973" class="cite xref">RFC6973</a>]</span>.  Given that, server operators should
+            ascertain whether the regulatory environment in which they
+            operate permits implementation of the functionality
+            defined in this document.<a href="#section-8-2" class="pilcrow">¶</a></p>
+</section>
+<section id="section-9">
+      <h2 id="name-security-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-9-1">
+
+            <span>[<a href="#RFC7481" class="cite xref">RFC7481</a>]</span> describes security requirements
+            and considerations for RDAP generally.<a href="#section-9-1" class="pilcrow">¶</a></p>
+</section>
+<div id="IANA">
+<section id="section-10">
+      <h2 id="name-iana-considerations">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<section id="section-10.1">
+        <h3 id="name-rdap-extensions-registry">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-rdap-extensions-registry" class="section-name selfRef">RDAP Extensions Registry</a>
+        </h3>
+<p id="section-10.1-1">
+
+                IANA is requested to register the following values in the RDAP Extensions Registry:<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.1-2.1">
+            <p id="section-10.1-2.1.1">Extension identifier: rirSearch1<a href="#section-10.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-2.2">
+            <p id="section-10.1-2.2.1">Registry operator: Any<a href="#section-10.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-2.3">
+            <p id="section-10.1-2.3.1">Published specification: [this document]<a href="#section-10.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-2.4">
+            <p id="section-10.1-2.4.1">Contact: IETF &lt;iesg@ietf.org&gt;<a href="#section-10.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-2.5">
+            <p id="section-10.1-2.5.1">Intended usage: This extension identifier is used for INR-specific search operations.<a href="#section-10.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal">
+<li class="normal" id="section-10.1-3.1">
+            <p id="section-10.1-3.1.1">Extension identifier: ips<a href="#section-10.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-3.2">
+            <p id="section-10.1-3.2.1">Registry operator: Any<a href="#section-10.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-3.3">
+            <p id="section-10.1-3.3.1">Published specification: [this document]<a href="#section-10.1-3.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-3.4">
+            <p id="section-10.1-3.4.1">Contact: IETF &lt;iesg@ietf.org&gt;<a href="#section-10.1-3.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-3.5">
+            <p id="section-10.1-3.5.1">Intended usage: This extension identifier is used for INR-specific search operations.<a href="#section-10.1-3.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal">
+<li class="normal" id="section-10.1-4.1">
+            <p id="section-10.1-4.1.1">Extension identifier: autnums<a href="#section-10.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-4.2">
+            <p id="section-10.1-4.2.1">Registry operator: Any<a href="#section-10.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-4.3">
+            <p id="section-10.1-4.3.1">Published specification: [this document]<a href="#section-10.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-4.4">
+            <p id="section-10.1-4.4.1">Contact: IETF &lt;iesg@ietf.org&gt;<a href="#section-10.1-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-4.5">
+            <p id="section-10.1-4.5.1">Intended usage: This extension identifier is used for INR-specific search operations.<a href="#section-10.1-4.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal">
+<li class="normal" id="section-10.1-5.1">
+            <p id="section-10.1-5.1.1">Extension identifier: ipSearchResults<a href="#section-10.1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-5.2">
+            <p id="section-10.1-5.2.1">Registry operator: Any<a href="#section-10.1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-5.3">
+            <p id="section-10.1-5.3.1">Published specification: [this document]<a href="#section-10.1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-5.4">
+            <p id="section-10.1-5.4.1">Contact: IETF &lt;iesg@ietf.org&gt;<a href="#section-10.1-5.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-5.5">
+            <p id="section-10.1-5.5.1">Intended usage: This extension identifier is used for INR-specific search operations.<a href="#section-10.1-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal">
+<li class="normal" id="section-10.1-6.1">
+            <p id="section-10.1-6.1.1">Extension identifier: autnumSearchResults<a href="#section-10.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-6.2">
+            <p id="section-10.1-6.2.1">Registry operator: Any<a href="#section-10.1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-6.3">
+            <p id="section-10.1-6.3.1">Published specification: [this document]<a href="#section-10.1-6.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-6.4">
+            <p id="section-10.1-6.4.1">Contact: IETF &lt;iesg@ietf.org&gt;<a href="#section-10.1-6.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.1-6.5">
+            <p id="section-10.1-6.5.1">Intended usage: This extension identifier is used for INR-specific search operations.<a href="#section-10.1-6.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+<section id="section-10.2">
+        <h3 id="name-link-relations-registry">
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-link-relations-registry" class="section-name selfRef">Link Relations Registry</a>
+        </h3>
+<p id="section-10.2-1">
+
+                IANA is requested to register the following values in the Link Relations Registry:<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.2-2.1">
+            <p id="section-10.2-2.1.1">Relation Name:  up-active<a href="#section-10.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-2.2">
+            <p id="section-10.2-2.2.1">Description:  Refers to an RDAP parent document that has a status of "active" in a hierarchy of documents.<a href="#section-10.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-2.3">
+            <p id="section-10.2-2.3.1">Reference: [this document]<a href="#section-10.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal">
+<li class="normal" id="section-10.2-3.1">
+            <p id="section-10.2-3.1.1">Relation Name:  down<a href="#section-10.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-3.2">
+            <p id="section-10.2-3.2.1">Description:  Refers to a set of child documents in a hierarchy of documents.<a href="#section-10.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-3.3">
+            <p id="section-10.2-3.3.1">Reference: [this document]<a href="#section-10.2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal">
+<li class="normal" id="section-10.2-4.1">
+            <p id="section-10.2-4.1.1">Relation Name:  top<a href="#section-10.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-4.2">
+            <p id="section-10.2-4.2.1">Description:  Refers to the topmost parent document in a hierarchy of documents.<a href="#section-10.2-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-4.3">
+            <p id="section-10.2-4.3.1">Reference: [this document]<a href="#section-10.2-4.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal">
+<li class="normal" id="section-10.2-5.1">
+            <p id="section-10.2-5.1.1">Relation Name:  top-active<a href="#section-10.2-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-5.2">
+            <p id="section-10.2-5.2.1">Description:  Refers to the topmost RDAP parent document that has a status of "active" in a hierarchy of documents.<a href="#section-10.2-5.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-5.3">
+            <p id="section-10.2-5.3.1">Reference: [this document]<a href="#section-10.2-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal">
+<li class="normal" id="section-10.2-6.1">
+            <p id="section-10.2-6.1.1">Relation Name:  bottom<a href="#section-10.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-6.2">
+            <p id="section-10.2-6.2.1">Description:  Refers to the set of child documents that do not themselves have child documents, in a hierarchy of documents.<a href="#section-10.2-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.2-6.3">
+            <p id="section-10.2-6.3.1">Reference: [this document]<a href="#section-10.2-6.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+<section id="section-10.3">
+        <h3 id="name-rdap-reverse-search-registr">
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-rdap-reverse-search-registr" class="section-name selfRef">RDAP Reverse Search Registry</a>
+        </h3>
+<p id="section-10.3-1">
+
+                IANA is requested to register the following entries in the "RDAP Reverse Search" registry:<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-10.3-2">
+          <dt id="section-10.3-2.1">Searchable Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-2.2">ips, autnums<a href="#section-10.3-2.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-2.3">Related Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-2.4">entity<a href="#section-10.3-2.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-2.5">Property:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-2.6">fn<a href="#section-10.3-2.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-2.7">Description:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-2.8">The server supports the IP/autnum search based on the full name (a.k.a formatted name) of an associated entity.<a href="#section-10.3-2.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-2.9">Registrant Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-2.10">IETF<a href="#section-10.3-2.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-2.11">Registrant Contact Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-2.12">iesg@ietf.org<a href="#section-10.3-2.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-2.13">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-2.14">This document.<a href="#section-10.3-2.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<span class="break"></span><dl class="dlParallel" id="section-10.3-3">
+          <dt id="section-10.3-3.1">Searchable Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-3.2">ips, autnums<a href="#section-10.3-3.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-3.3">Related Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-3.4">entity<a href="#section-10.3-3.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-3.5">Property:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-3.6">handle<a href="#section-10.3-3.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-3.7">Description:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-3.8">The server supports the IP/autnum search based on the handle of an associated entity.<a href="#section-10.3-3.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-3.9">Registrant Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-3.10">IETF<a href="#section-10.3-3.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-3.11">Registrant Contact Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-3.12">iesg@ietf.org<a href="#section-10.3-3.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-3.13">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-3.14">This document.<a href="#section-10.3-3.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<span class="break"></span><dl class="dlParallel" id="section-10.3-4">
+          <dt id="section-10.3-4.1">Searchable Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-4.2">ips, autnums<a href="#section-10.3-4.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-4.3">Related Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-4.4">entity<a href="#section-10.3-4.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-4.5">Property:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-4.6">email<a href="#section-10.3-4.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-4.7">Description:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-4.8">The server supports the IP/autnum search based on the email address of an associated entity.<a href="#section-10.3-4.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-4.9">Registrant Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-4.10">IETF<a href="#section-10.3-4.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-4.11">Registrant Contact Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-4.12">iesg@ietf.org<a href="#section-10.3-4.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-4.13">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-4.14">This document.<a href="#section-10.3-4.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<span class="break"></span><dl class="dlParallel" id="section-10.3-5">
+          <dt id="section-10.3-5.1">Searchable Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-5.2">ips, autnums<a href="#section-10.3-5.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-5.3">Related Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-5.4">entity<a href="#section-10.3-5.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-5.5">Property:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-5.6">role<a href="#section-10.3-5.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-5.7">Description:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-5.8">The server supports the IP/autnum search based on the role of an associated entity.<a href="#section-10.3-5.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-5.9">Registrant Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-5.10">IETF<a href="#section-10.3-5.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-5.11">Registrant Contact Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-5.12">iesg@ietf.org<a href="#section-10.3-5.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.3-5.13">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.3-5.14">This document.<a href="#section-10.3-5.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+<section id="section-10.4">
+        <h3 id="name-rdap-reverse-search-mapping">
+<a href="#section-10.4" class="section-number selfRef">10.4. </a><a href="#name-rdap-reverse-search-mapping" class="section-name selfRef">RDAP Reverse Search Mapping Registry</a>
+        </h3>
+<p id="section-10.4-1">
+
+                IANA is requested to register the following entries
+                in the "RDAP Reverse Search Mapping" registry:<a href="#section-10.4-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-10.4-2">
+          <dt id="section-10.4-2.1">Searchable Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-2.2">ips, autnums<a href="#section-10.4-2.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-2.3">Related Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-2.4">entity<a href="#section-10.4-2.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-2.5">Property:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-2.6">fn<a href="#section-10.4-2.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-2.7">Property Path:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-2.8">$..entities[*].vcardArray[1][?(@[0]=='fn')][3]<a href="#section-10.4-2.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-2.9">Registrant Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-2.10">IETF<a href="#section-10.4-2.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-2.11">Registrant Contact Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-2.12">iesg@ietf.org<a href="#section-10.4-2.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-2.13">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-2.14">This document.<a href="#section-10.4-2.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<span class="break"></span><dl class="dlParallel" id="section-10.4-3">
+          <dt id="section-10.4-3.1">Searchable Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-3.2">ips, autnums<a href="#section-10.4-3.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-3.3">Related Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-3.4">entity<a href="#section-10.4-3.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-3.5">Property:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-3.6">handle<a href="#section-10.4-3.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-3.7">Property Path:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-3.8">$..entities[*].handle<a href="#section-10.4-3.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-3.9">Registrant Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-3.10">IETF<a href="#section-10.4-3.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-3.11">Registrant Contact Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-3.12">iesg@ietf.org<a href="#section-10.4-3.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-3.13">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-3.14">This document.<a href="#section-10.4-3.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<span class="break"></span><dl class="dlParallel" id="section-10.4-4">
+          <dt id="section-10.4-4.1">Searchable Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-4.2">ips, autnums<a href="#section-10.4-4.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-4.3">Related Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-4.4">entity<a href="#section-10.4-4.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-4.5">Property:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-4.6">email<a href="#section-10.4-4.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-4.7">Property Path:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-4.8">$..entities[*].vcardArray[1][?(@[0]=='email')][3]<a href="#section-10.4-4.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-4.9">Registrant Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-4.10">IETF<a href="#section-10.4-4.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-4.11">Registrant Contact Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-4.12">iesg@ietf.org<a href="#section-10.4-4.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-4.13">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-4.14">This document.<a href="#section-10.4-4.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<span class="break"></span><dl class="dlParallel" id="section-10.4-5">
+          <dt id="section-10.4-5.1">Searchable Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-5.2">ips, autnums<a href="#section-10.4-5.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-5.3">Related Resource Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-5.4">entity<a href="#section-10.4-5.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-5.5">Property:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-5.6">role<a href="#section-10.4-5.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-5.7">Property Path:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-5.8">$..entities[*].roles<a href="#section-10.4-5.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-5.9">Registrant Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-5.10">IETF<a href="#section-10.4-5.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-5.11">Registrant Contact Information:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-5.12">iesg@ietf.org<a href="#section-10.4-5.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-10.4-5.13">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-10.4-5.14">This document.<a href="#section-10.4-5.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</section>
+</div>
+<div id="implementation-status">
+<section id="section-11">
+      <h2 id="name-implementation-status">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-implementation-status" class="section-name selfRef">Implementation Status</a>
+      </h2>
+<aside id="section-11-1">
+        <p id="section-11-1.1">Note to the RFC Editor - remove this section before publication, as
+  well as the reference to RFC 7942.<a href="#section-11-1.1" class="pilcrow">¶</a></p>
+</aside>
+<p id="section-11-2">This section records the status of known implementations of the
+protocol defined by this specification at the time of posting of this
+Internet-Draft, and is based on a proposal described in <span>[<a href="#RFC7942" class="cite xref">RFC7942</a>]</span>.
+The description of implementations in this section is intended to
+assist the IETF in its decision processes in progressing drafts to
+RFCs.  Please note that the listing of any individual implementation
+here does not imply endorsement by the IETF.  Furthermore, no effort
+has been spent to verify the information presented here that was
+supplied by IETF contributors.  This is not intended as, and must not
+be construed to be, a catalogue of available implementations or their
+features.  Readers are advised to note that other implementations may
+exist.<a href="#section-11-2" class="pilcrow">¶</a></p>
+<p id="section-11-3">According to <span>[<a href="#RFC7942" class="cite xref">RFC7942</a>]</span>, "this will allow reviewers and working groups
+to assign due consideration to documents that have the benefit of
+running code, which may serve as evidence of valuable experimentation
+and feedback that have made the implemented protocols more mature.
+It is up to the individual working groups to use this information as
+they see fit".<a href="#section-11-3" class="pilcrow">¶</a></p>
+<div id="apnic-rdap-implementation">
+<section id="section-11.1">
+        <h3 id="name-apnic-rdap-implementation">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-apnic-rdap-implementation" class="section-name selfRef">APNIC RDAP Implementation</a>
+        </h3>
+<ul class="normal">
+<li class="normal" id="section-11.1-1.1">
+            <p id="section-11.1-1.1.1">Responsible Organization: Asia-Pacific Network Information Centre (APNIC)<a href="#section-11.1-1.1.1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1.1.2"></p>
+</li>
+          <li class="normal" id="section-11.1-1.2">
+            <p id="section-11.1-1.2.1">Location: https://github.com/APNIC-net/rdap-rmp-demo/tree/rir-search<a href="#section-11.1-1.2.1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1.2.2"></p>
+</li>
+          <li class="normal" id="section-11.1-1.3">
+            <p id="section-11.1-1.3.1">Description: This implementation includes support for the various searches and responses described in this document.<a href="#section-11.1-1.3.1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1.3.2"></p>
+</li>
+          <li class="normal" id="section-11.1-1.4">
+            <p id="section-11.1-1.4.1">Level of Maturity: This is a proof-of-concept implementation.<a href="#section-11.1-1.4.1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1.4.2"></p>
+</li>
+          <li class="normal" id="section-11.1-1.5">
+            <p id="section-11.1-1.5.1">Coverage: This implementation includes all of the features described in this
+          specification.<a href="#section-11.1-1.5.1" class="pilcrow">¶</a></p>
+<p id="section-11.1-1.5.2"></p>
+</li>
+          <li class="normal" id="section-11.1-1.6">
+            <p id="section-11.1-1.6.1">Contact Information: Tom Harrison, tomh@apnic.net<a href="#section-11.1-1.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="ripe-ncc-rdap-implementation">
+<section id="section-11.2">
+        <h3 id="name-ripe-ncc-rdap-implementatio">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-ripe-ncc-rdap-implementatio" class="section-name selfRef">RIPE NCC RDAP Implementation</a>
+        </h3>
+<ul class="normal">
+<li class="normal" id="section-11.2-1.1">
+            <p id="section-11.2-1.1.1">Responsible Organization: RIPE NCC<a href="#section-11.2-1.1.1" class="pilcrow">¶</a></p>
+<p id="section-11.2-1.1.2"></p>
+</li>
+          <li class="normal" id="section-11.2-1.2">
+            <p id="section-11.2-1.2.1">Location: https://github.com/RIPE-NCC/whois<a href="#section-11.2-1.2.1" class="pilcrow">¶</a></p>
+<p id="section-11.2-1.2.2"></p>
+</li>
+          <li class="normal" id="section-11.2-1.3">
+            <p id="section-11.2-1.3.1">Description: This implementation includes support for basic searches for IP networks and ASNs.<a href="#section-11.2-1.3.1" class="pilcrow">¶</a></p>
+<p id="section-11.2-1.3.2"></p>
+</li>
+          <li class="normal" id="section-11.2-1.4">
+            <p id="section-11.2-1.4.1">Level of Maturity: This is a production implementation.<a href="#section-11.2-1.4.1" class="pilcrow">¶</a></p>
+<p id="section-11.2-1.4.2"></p>
+</li>
+          <li class="normal" id="section-11.2-1.5">
+            <p id="section-11.2-1.5.1">Coverage: This implementation includes the new basic searches only.<a href="#section-11.2-1.5.1" class="pilcrow">¶</a></p>
+<p id="section-11.2-1.5.2"></p>
+</li>
+          <li class="normal" id="section-11.2-1.6">
+            <p id="section-11.2-1.6.1">Contact Information: Ed Shryane, eshryane@ripe.net<a href="#section-11.2-1.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="Acknowledgements">
+<section id="section-12">
+      <h2 id="name-acknowledgements">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="section-12-1">
+
+            The authors wish to thank Mario Loffredo, Andy Newton,
+            Antoin Verschuren, and James Gould for document review and
+            associated comments.<a href="#section-12-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-13">
+      <h2 id="name-references">
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-13.1">
+        <h3 id="name-normative-references">
+<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.ietf-regext-rdap-reverse-search">[I-D.ietf-regext-rdap-reverse-search]</dt>
+        <dd>
+<span class="refAuthor">Loffredo, M.</span> and <span class="refAuthor">M. Martinelli</span>, <span class="refTitle">"Registration Data Access Protocol (RDAP) Reverse Search"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-regext-rdap-reverse-search-26</span>, <time datetime="2023-11-13" class="refDate">13 November 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-regext-rdap-reverse-search-26">https://datatracker.ietf.org/doc/html/draft-ietf-regext-rdap-reverse-search-26</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7481">[RFC7481]</dt>
+        <dd>
+<span class="refAuthor">Hollenbeck, S.</span> and <span class="refAuthor">N. Kong</span>, <span class="refTitle">"Security Services for the Registration Data Access Protocol (RDAP)"</span>, <span class="seriesInfo">STD 95</span>, <span class="seriesInfo">RFC 7481</span>, <span class="seriesInfo">DOI 10.17487/RFC7481</span>, <time datetime="2015-03" class="refDate">March 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7481">https://www.rfc-editor.org/info/rfc7481</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9082">[RFC9082]</dt>
+        <dd>
+<span class="refAuthor">Hollenbeck, S.</span> and <span class="refAuthor">A. Newton</span>, <span class="refTitle">"Registration Data Access Protocol (RDAP) Query Format"</span>, <span class="seriesInfo">STD 95</span>, <span class="seriesInfo">RFC 9082</span>, <span class="seriesInfo">DOI 10.17487/RFC9082</span>, <time datetime="2021-06" class="refDate">June 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9082">https://www.rfc-editor.org/info/rfc9082</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9083">[RFC9083]</dt>
+        <dd>
+<span class="refAuthor">Hollenbeck, S.</span> and <span class="refAuthor">A. Newton</span>, <span class="refTitle">"JSON Responses for the Registration Data Access Protocol (RDAP)"</span>, <span class="seriesInfo">STD 95</span>, <span class="seriesInfo">RFC 9083</span>, <span class="seriesInfo">DOI 10.17487/RFC9083</span>, <time datetime="2021-06" class="refDate">June 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9083">https://www.rfc-editor.org/info/rfc9083</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9110">[RFC9110]</dt>
+      <dd>
+<span class="refAuthor">Fielding, R., Ed.</span>, <span class="refAuthor">Nottingham, M., Ed.</span>, and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"HTTP Semantics"</span>, <span class="seriesInfo">STD 97</span>, <span class="seriesInfo">RFC 9110</span>, <span class="seriesInfo">DOI 10.17487/RFC9110</span>, <time datetime="2022-06" class="refDate">June 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9110">https://www.rfc-editor.org/info/rfc9110</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-13.2">
+        <h3 id="name-informative-references">
+<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC6973">[RFC6973]</dt>
+        <dd>
+<span class="refAuthor">Cooper, A.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Aboba, B.</span>, <span class="refAuthor">Peterson, J.</span>, <span class="refAuthor">Morris, J.</span>, <span class="refAuthor">Hansen, M.</span>, and <span class="refAuthor">R. Smith</span>, <span class="refTitle">"Privacy Considerations for Internet Protocols"</span>, <span class="seriesInfo">RFC 6973</span>, <span class="seriesInfo">DOI 10.17487/RFC6973</span>, <time datetime="2013-07" class="refDate">July 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6973">https://www.rfc-editor.org/info/rfc6973</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7480">[RFC7480]</dt>
+        <dd>
+<span class="refAuthor">Newton, A.</span>, <span class="refAuthor">Ellacott, B.</span>, and <span class="refAuthor">N. Kong</span>, <span class="refTitle">"HTTP Usage in the Registration Data Access Protocol (RDAP)"</span>, <span class="seriesInfo">STD 95</span>, <span class="seriesInfo">RFC 7480</span>, <span class="seriesInfo">DOI 10.17487/RFC7480</span>, <time datetime="2015-03" class="refDate">March 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7480">https://www.rfc-editor.org/info/rfc7480</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7942">[RFC7942]</dt>
+        <dd>
+<span class="refAuthor">Sheffer, Y.</span> and <span class="refAuthor">A. Farrel</span>, <span class="refTitle">"Improving Awareness of Running Code: The Implementation Status Section"</span>, <span class="seriesInfo">BCP 205</span>, <span class="seriesInfo">RFC 7942</span>, <span class="seriesInfo">DOI 10.17487/RFC7942</span>, <time datetime="2016-07" class="refDate">July 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7942">https://www.rfc-editor.org/info/rfc7942</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8288">[RFC8288]</dt>
+      <dd>
+<span class="refAuthor">Nottingham, M.</span>, <span class="refTitle">"Web Linking"</span>, <span class="seriesInfo">RFC 8288</span>, <span class="seriesInfo">DOI 10.17487/RFC8288</span>, <time datetime="2017-10" class="refDate">October 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8288">https://www.rfc-editor.org/info/rfc8288</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="authors-addresses">
+<section id="appendix-A">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Tom Harrison</span></div>
+<div dir="auto" class="left"><span class="org">Asia Pacific Network Information Centre</span></div>
+<div dir="auto" class="left"><span class="street-address">6 Cordelia St</span></div>
+<div dir="auto" class="left">
+<span class="locality">South Brisbane</span> <span class="region">QLD</span> <span class="postal-code">4101</span>
+</div>
+<div dir="auto" class="left"><span class="country-name">Australia</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:tomh@apnic.net" class="email">tomh@apnic.net</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Jasdip Singh</span></div>
+<div dir="auto" class="left"><span class="org">American Registry for Internet Numbers</span></div>
+<div dir="auto" class="left"><span class="street-address">PO Box 232290</span></div>
+<div dir="auto" class="left">
+<span class="locality">Centreville</span>, <span class="region">VA</span> <span class="postal-code">20120</span>
+</div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:jasdips@arin.net" class="email">jasdips@arin.net</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'8a38ece2796d654a',t:'MTcyMTAzNzgzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
