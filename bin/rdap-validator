@@ -33,7 +33,6 @@ const responseType  = opt.named.type ?? "domain";
 const serverType    = opt.named["server-type"] ?? "vanilla";
 
 import rdapValidator  from "../lib/rdap-validator.js";
-import XMLHttpRequest from "xmlhttprequest";
 
 const jsonResultData = {
     rdapValidatorVersion:   rdapValidator.version,
@@ -42,8 +41,6 @@ const jsonResultData = {
     serverType:             serverType,
     results:                [],
 };
-
-rdapValidator.setXHR(XMLHttpRequest.XMLHttpRequest);
 
 let lastDepth = 0;
 
@@ -58,7 +55,7 @@ const cliResultCallback = function(result, message, path, ref) {
     const indent        = INDENT_STRING.repeat(onlyErrors ? 0 : Math.max(0, depth-1)) + "- ";
 
     if (false === result) {
-        process.stdout.say(indent + MSG_FAIL + " " + message + " (" + path + ")");
+        process.stdout.say(indent + MSG_FAIL + " " + message + " (" + (ref ? path + ", see " + ref : path) + ")");
 
     } else if (false === onlyErrors) {
         if (true === result) {

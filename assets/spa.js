@@ -1,7 +1,5 @@
 import rdapValidator from "../lib/rdap-validator.js";
 
-rdapValidator.setXHR(XMLHttpRequest);
-
 rdapValidator.setTestCompleteCallback(function() {
     const testedURL = new URL(rdapValidator.lastTestedURL);
     window.title = "RDAP Validator : " + testedURL.pathname.split("/").pop() + " : " + rdapValidator.lastTestedResponseType + " : " + rdapValidator.lastTestedServerType;
@@ -127,8 +125,6 @@ rdapValidator.setResultCallback(function(result, message, path, ref) {
 
             const el = document.getElementById("response-" + path) ?? document.getElementById("response-" + JSONPathParent(path));
 
-            console.log("reveal()");
-            console.log(el);
             reveal(el);
             expand(el);
 
@@ -145,7 +141,7 @@ rdapValidator.setResultCallback(function(result, message, path, ref) {
                 }
             }
             setTimeout(func, 100);
-    
+
         });
     }
 
@@ -225,7 +221,7 @@ Object.keys(rdapValidator.serverTypes).forEach(function(type) {
 });
 
 const clickFunction = function() {
-    
+
     document.getElementById("result-container").removeAttribute("hidden");
 
     const el = document.getElementById("results");
