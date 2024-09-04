@@ -80,6 +80,8 @@ const jsonResultCallback = function(result, message, path, ref) {
 };
 
 if (opt.named.json) {
+    rdapValidator.setResultCallback(jsonResultCallback);
+
     rdapValidator.setTestCompleteCallback(function() {
 
         jsonResultData.errorCount       = jsonResultData.results.filter((r) => false === r.result).length
@@ -88,8 +90,6 @@ if (opt.named.json) {
 
         process.stdout.say(JSON.stringify(jsonResultData, null, 2));
     });
-
-    rdapValidator.setResultCallback(jsonResultCallback);
 
 } else {
     rdapValidator.setResultCallback(cliResultCallback);
