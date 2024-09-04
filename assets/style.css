@@ -20,7 +20,7 @@ summary pre {
 }
 #tree, #results {
   overflow:scroll;
-  height: 50vh;
+  height: 100vh;
   padding:0.5em;
 }
 #result-container card:first-child {
@@ -28,7 +28,7 @@ summary pre {
 }
 #result-container card:last-child {
   margin-left: 0.25em;
-  
+
 }
 .list-group-item-action:hover {
   cursor:pointer;
