@@ -1,0 +1,554 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="robots" content="index,follow" />
+    <meta name="creator" content="rfchandler version 0.2" />
+      <meta name="citation_author" content="S. Hollenbeck"/>
+      <meta name="citation_author" content="R. Carney"/>
+      <meta name="citation_publication_date" content="May, 2019"/>
+      <meta name="citation_title" content="vCard Format Extensions: ICANN Extensions for the Registration Data Access Protocol (RDAP)"/>
+      <meta name="citation_doi" content="10.17487/RFC8605"/>
+      <meta name="citation_issn" content="2070-1721"/>
+      <meta name="citation_technical_report_number" content="rfc8605"/>
+      <meta name="citation_pdf_url" content="https://www.rfc-editor.org/rfc/pdfrfc/rfc8605.txt.pdf"/>
+<title>RFC 8605: vCard Format Extensions: ICANN Extensions for the Registration Data Access Protocol (RDAP)</title>    
+        
+
+        <style type="text/css">
+	@media only screen 
+	  and (min-width: 992px)
+	  and (max-width: 1199px) {
+	    body { font-size: 14pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+	@media only screen 
+	  and (min-width: 768px)
+	  and (max-width: 991px) {
+            body { font-size: 14pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+	@media only screen 
+	  and (min-width: 480px)
+	  and (max-width: 767px) {
+            body { font-size: 11pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+	@media only screen 
+	  and (max-width: 479px) {
+            body { font-size: 8pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+	@media only screen 
+	  and (min-device-width : 375px) 
+	  and (max-device-width : 667px) {
+            body { font-size: 9.5pt; }
+            div.content { width: 96ex; margin: 0; }
+        }
+	@media only screen 
+	  and (min-device-width: 1200px) {
+            body { font-size: 10pt; margin: 0 4em; }
+            div.content { width: 96ex; margin: 0; }
+        }
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	    font-weight: bold;
+           /* line-height: 0pt; */
+            display: inline;
+            white-space: pre;
+            font-family: monospace;
+            font-size: 1em;
+	    font-weight: bold;
+        }
+        pre {
+            font-size: 1em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+	.pre {
+	    white-space: pre;
+	    font-family: monospace;
+	}
+	.header{
+	    font-weight: bold;
+	}
+        .newpage {
+            page-break-before: always;
+        }
+        .invisible {
+            text-decoration: none;
+            color: white;
+        }
+        a.selflink {
+          color: black;
+          text-decoration: none;
+        }
+        @media print {
+            body {
+                font-family: monospace;
+                font-size: 10.5pt;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-size: 1em;
+            }
+        
+            a:link, a:visited {
+                color: inherit;
+                text-decoration: none;
+            }
+            .noprint {
+                display: none;
+            }
+        }
+	@media screen {
+	    .grey, .grey a:link, .grey a:visited {
+		color: #777;
+	    }
+            .docinfo {
+                background-color: #EEE;
+            }
+            .top {
+                border-top: 7px solid #EEE;
+            }
+            .bgwhite  { background-color: white; }
+            .bgred    { background-color: #F44; }
+            .bggrey   { background-color: #666; }
+            .bgbrown  { background-color: #840; }            
+            .bgorange { background-color: #FA0; }
+            .bgyellow { background-color: #EE0; }
+            .bgmagenta{ background-color: #F4F; }
+            .bgblue   { background-color: #66F; }
+            .bgcyan   { background-color: #4DD; }
+            .bggreen  { background-color: #4F4; }
+
+            .legend   { font-size: 90%; }
+            .cplate   { font-size: 70%; border: solid grey 1px; }
+	}
+    </style>
+    <!--[if IE]>
+    <style>
+    body {
+       font-size: 13px;
+       margin: 10px 10px;
+    }
+    </style>
+    <![endif]-->    <script type="text/javascript"><!--
+    function addHeaderTags() {
+        var spans = document.getElementsByTagName("span");
+        for (var i=0; i < spans.length; i++) {
+            var elem = spans[i];
+            if (elem) {
+                var level = elem.getAttribute("class");
+                if (level == "h1" || level == "h2" || level == "h3" || level == "h4" || level == "h5" || level == "h6") {
+                    elem.innerHTML = "<"+level+">"+elem.innerHTML+"</"+level+">";               
+                }
+            }
+        }
+    }
+    var legend_html = "Colour legend:<br />      <table>         <tr><td>Unknown:</td>                   <td><span class='cplate bgwhite'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft:</td>                     <td><span class='cplate bgred'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Informational:</td>             <td><span class='cplate bgorange'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Experimental:</td>              <td><span class='cplate bgyellow'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Best Common Practice:</td>      <td><span class='cplate bgmagenta'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Proposed Standard:</td>         <td><span class='cplate bgblue'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft Standard (old designation):</td> <td><span class='cplate bgcyan'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Internet Standard:</td>         <td><span class='cplate bggreen'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Historic:</td>                  <td><span class='cplate bggrey'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Obsolete:</td>                  <td><span class='cplate bgbrown'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>     </table>";
+    function showElem(id) {
+        var elem = document.getElementById(id);
+        elem.innerHTML = eval(id+"_html");
+        elem.style.visibility='visible';
+    }
+    function hideElem(id) {
+        var elem = document.getElementById(id);
+        elem.style.visibility='hidden';        
+        elem.innerHTML = "";
+    }
+    // -->
+    </script></head>
+<body>
+<span class="pre noprint docinfo">[<a href="https://www.rfc-editor.org" title="RFC Editor">RFC Home</a>] [<a href="/rfc/rfc8605.txt">TEXT</a>|<a href="/rfc/pdfrfc/rfc8605.txt.pdf">PDF</a>|<a href="/rfc/rfc8605.html">HTML</a>] [<a href='https://datatracker.ietf.org/doc/rfc8605' title='IETF Datatracker information for this document'>Tracker</a>] [<a href="https://datatracker.ietf.org/ipr/search/?rfc=8605&amp;submit=rfc" title="IPR disclosures related to this document">IPR</a>] [<a href='https://www.rfc-editor.org/info/rfc8605' title='Info page'>Info page</a>]                  </span><br/><span class="pre noprint docinfo">                                                                        </span><br /><span class="pre noprint docinfo">                                                           INFORMATIONAL</span><br /><span class="pre noprint docinfo">                                                                        </span><pre>Internet Engineering Task Force (IETF)                     S. Hollenbeck
+Request for Comments: 8605                                 Verisign Labs
+Category: Informational                                        R. Carney
+ISSN: 2070-1721                                             GoDaddy Inc.
+                                                                May 2019
+
+
+                        <span class="h1">vCard Format Extensions:</span>
+   <span class="h1">ICANN Extensions for the Registration Data Access Protocol (RDAP)</span>
+
+Abstract
+
+   This document defines extensions to the vCard data format for
+   representing and exchanging contact information used to implement the
+   Internet Corporation for Assigned Names and Numbers (ICANN)
+   operational profile for the Registration Data Access Protocol (RDAP).
+   The property and parameter defined here are used to add values to
+   RDAP responses that are consistent with ICANN policies.
+
+Status of This Memo
+
+   This document is not an Internet Standards Track specification; it is
+   published for informational purposes.
+
+   This document is a product of the Internet Engineering Task Force
+   (IETF).  It represents the consensus of the IETF community.  It has
+   received public review and has been approved for publication by the
+   Internet Engineering Steering Group (IESG).  Not all documents
+   approved by the IESG are candidates for any level of Internet
+   Standard; see <a href="./rfc7841#section-2">Section&nbsp;2 of RFC 7841</a>.
+
+   Information about the current status of this document, any errata,
+   and how to provide feedback on it may be obtained at
+   <a href="https://www.rfc-editor.org/info/rfc8605">https://www.rfc-editor.org/info/rfc8605</a>.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Hollenbeck &amp; Carney           Informational                     [Page 1]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-2" ></span>
+<span class="grey"><a href="./rfc8605">RFC 8605</a>               ICANN RDAP vCard Extensions              May 2019</span>
+
+
+Copyright Notice
+
+   Copyright (c) 2019 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to <a href="https://www.rfc-editor.org/bcp/bcp78">BCP 78</a> and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+Table of Contents
+
+   <a href="#section-1">1</a>.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-2">2</a>
+     <a href="#section-1.1">1.1</a>.  Terminology Used in This Document . . . . . . . . . . . .   <a href="#page-3">3</a>
+   <a href="#section-2">2</a>.  vCard Extensions: Properties  . . . . . . . . . . . . . . . .   <a href="#page-3">3</a>
+     <a href="#section-2.1">2.1</a>.  Property: CONTACT-URI . . . . . . . . . . . . . . . . . .   <a href="#page-3">3</a>
+   <a href="#section-3">3</a>.  vCard Extensions: Parameters  . . . . . . . . . . . . . . . .   <a href="#page-4">4</a>
+     <a href="#section-3.1">3.1</a>.  Parameter: CC . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-4">4</a>
+   <a href="#section-4">4</a>.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+   <a href="#section-5">5</a>.  Security Considerations . . . . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+   <a href="#section-6">6</a>.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+     <a href="#section-6.1">6.1</a>.  Normative References  . . . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+     <a href="#section-6.2">6.2</a>.  Informative References  . . . . . . . . . . . . . . . . .   <a href="#page-6">6</a>
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-6">6</a>
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-7">7</a>
+
+<span class="h2"><a class="selflink" id="section-1" href="#section-1">1</a>.  Introduction</span>
+
+   The "Temporary Specification for gTLD Registration Data" available at
+   &lt;<a href="https://www.icann.org/resources/pages/gtld-registration-data-specs-en">https://www.icann.org/resources/pages/gtld-registration-data-specs-</a>
+   <a href="https://www.icann.org/resources/pages/gtld-registration-data-specs-en">en</a>&gt; was published by the Internet Corporation for Assigned Named and
+   Numbers (ICANN) in 2018.  The Temporary Specification includes
+   requirements that cannot currently be met by the Registration Data
+   Access Protocol (RDAP, [<a href="./rfc7483" title="&quot;JSON Responses for the Registration Data Access Protocol (RDAP)&quot;">RFC7483</a>]) without extending the underlying
+   vCard [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>] specification used to represent RDAP entity objects.
+   This document includes specifications for an additional vCard
+   property and an additional vCard parameter to meet the requirements
+   of the Temporary Specification.
+
+
+
+
+
+
+
+
+<span class="grey">Hollenbeck &amp; Carney           Informational                     [Page 2]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-3" ></span>
+<span class="grey"><a href="./rfc8605">RFC 8605</a>               ICANN RDAP vCard Extensions              May 2019</span>
+
+
+<span class="h3"><a class="selflink" id="section-1.1" href="#section-1.1">1.1</a>.  Terminology Used in This Document</span>
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   <a href="https://www.rfc-editor.org/bcp/bcp14">BCP 14</a> [<a href="./rfc2119" title="&quot;Key words for use in RFCs to Indicate Requirement Levels&quot;">RFC2119</a>] [<a href="./rfc8174" title="&quot;Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words&quot;">RFC8174</a>] when, and only when, they appear in all
+   capitals, as shown here.
+
+   Syntax specifications shown here use the augmented Backus-Naur Form
+   (ABNF) as described in [<a href="./rfc5234" title="&quot;Augmented BNF for Syntax Specifications: ABNF&quot;">RFC5234</a>] and are specified as in the base
+   vCard specification [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>].
+
+<span class="h2"><a class="selflink" id="section-2" href="#section-2">2</a>.  vCard Extensions: Properties</span>
+
+   This document describes one new vCard extension property.
+
+<span class="h3"><a class="selflink" id="section-2.1" href="#section-2.1">2.1</a>.  Property: CONTACT-URI</span>
+
+   Namespace:
+
+   Property name: CONTACT-URI
+
+   Purpose: RDAP entity information can be redacted under certain
+   circumstances (e.g., privacy).  The Temporary Specification requires
+   that RDAP entity objects representing "Registrant", "Admin", and
+   "Tech" contacts contain an email address or a location for a web form
+   to facilitate email communication with the relevant contact in a way
+   that does not identify the associated individual.  The CONTACT-URI
+   property can be used to include URIs representing an email address or
+   a location for a web form.
+
+   Value type: A single URI value.
+
+   Cardinality: *
+
+   Property parameters: PREF
+
+   Description: At least one "mailto", "http", or "https" URI value MUST
+   be provided.  Additional CONTACT-URI properties MAY be provided to
+   describe other contact methods.  If multiple CONTACT-URI properties
+   are used, the vCard PREF parameter MUST be used to describe the most
+   preferred property as described in <a href="./rfc6350#section-5.3">Section&nbsp;5.3 of RFC 6350</a> [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>].
+
+
+
+
+
+
+
+
+
+<span class="grey">Hollenbeck &amp; Carney           Informational                     [Page 3]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-4" ></span>
+<span class="grey"><a href="./rfc8605">RFC 8605</a>               ICANN RDAP vCard Extensions              May 2019</span>
+
+
+   Format definition:
+
+      CONTACT-URI-param = "VALUE=uri" / pref-param ; pref-param from
+      [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>]
+
+      CONTACT-URI-value = uri ; uri from [<a href="./rfc3986" title="&quot;Uniform Resource Identifier (URI): Generic Syntax&quot;">RFC3986</a>]
+
+   Examples:
+
+      CONTACT-URI:https://contact.example.com
+
+      CONTACT-URI;PREF=1:mailto:contact@example.com
+
+<span class="h2"><a class="selflink" id="section-3" href="#section-3">3</a>.  vCard Extensions: Parameters</span>
+
+   This document describes one new vCard extension parameter.
+
+<span class="h3"><a class="selflink" id="section-3.1" href="#section-3.1">3.1</a>.  Parameter: CC</span>
+
+   Namespace:
+
+   Parameter name: CC
+
+   Purpose: ICANN requires the use of ISO 3166 [<a href="#ref-ISO.3166.1988">ISO.3166.1988</a>] two-
+   letter codes, not "country names", in RDAP entity responses.  This
+   parameter is used to extend the ADR property described in
+   <a href="./rfc6350#section-6.3.1">Section&nbsp;6.3.1 of RFC 6350</a> [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>].
+
+   Description: This parameter contains the ISO 3166 [<a href="#ref-ISO.3166.1988">ISO.3166.1988</a>]
+   two-character country code associated with the "country name" ADR
+   component described in <a href="./rfc6350#section-6.3.1">Section&nbsp;6.3.1 of RFC 6350</a> [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>].
+
+   Format definition:
+
+      CC-param = "CC=" 2ALPHA
+
+   Examples:
+
+      ADR;TYPE=work;CC=US:;;54321 Oak St;Reston;VA;20190;USA
+
+      ADR;TYPE=home;CC=US:;;12345 Elm St;Reston;VA;20190;USA
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Hollenbeck &amp; Carney           Informational                     [Page 4]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-5" ></span>
+<span class="grey"><a href="./rfc8605">RFC 8605</a>               ICANN RDAP vCard Extensions              May 2019</span>
+
+
+<span class="h2"><a class="selflink" id="section-4" href="#section-4">4</a>.  IANA Considerations</span>
+
+   IANA has added the following entry to the "vCard Properties" registry
+   defined in <a href="./rfc6350#section-10.3.1">Section&nbsp;10.3.1 of RFC 6350</a> [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>].
+
+   Namespace:
+
+   Property: CONTACT-URI
+
+   Reference: <a href="./rfc8605#section-2.1">Section&nbsp;2.1 of RFC 8605</a> (this RFC)
+
+   IANA is requested to add the following entry to the vCard Parameters
+   registry defined in <a href="./rfc6350#section-10.3.2">Section&nbsp;10.3.2 of RFC 6350</a> [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>].
+
+   Namespace:
+
+   Property: CC
+
+   Reference: <a href="./rfc8605#section-3.1">Section&nbsp;3.1 of RFC 8605</a> (this RFC)
+
+<span class="h2"><a class="selflink" id="section-5" href="#section-5">5</a>.  Security Considerations</span>
+
+   The CONTACT-URI value is purposefully intended to be a publicly
+   visible contact reference; as such, it cannot require confidentiality
+   protection.  There are, however, privacy implications in the choice
+   of a URI scheme for the web form contact method.  An "https" URI
+   value can be used to indicate support for confidentiality protection
+   for connections to the server that publishes the web form.  This
+   document presents no other security considerations beyond those
+   described in <a href="#section-9">Section 9</a> of the base vCard specification [<a href="./rfc6350" title="&quot;vCard Format Specification&quot;">RFC6350</a>].
+
+<span class="h2"><a class="selflink" id="section-6" href="#section-6">6</a>.  References</span>
+
+<span class="h3"><a class="selflink" id="section-6.1" href="#section-6.1">6.1</a>.  Normative References</span>
+
+   [<a id="ref-ISO.3166.1988">ISO.3166.1988</a>]
+              International Organization for Standardization, "Codes for
+              the representation of names of countries, 3rd edition",
+              ISO Standard 3166, August 1988.
+
+   [<a id="ref-RFC2119">RFC2119</a>]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", <a href="https://www.rfc-editor.org/bcp/bcp14">BCP 14</a>, <a href="./rfc2119">RFC 2119</a>,
+              DOI 10.17487/RFC2119, March 1997,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.
+
+
+
+
+
+
+
+<span class="grey">Hollenbeck &amp; Carney           Informational                     [Page 5]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-6" ></span>
+<span class="grey"><a href="./rfc8605">RFC 8605</a>               ICANN RDAP vCard Extensions              May 2019</span>
+
+
+   [<a id="ref-RFC3986">RFC3986</a>]  Berners-Lee, T., Fielding, R., and L. Masinter, "Uniform
+              Resource Identifier (URI): Generic Syntax", STD 66,
+              <a href="./rfc3986">RFC 3986</a>, DOI 10.17487/RFC3986, January 2005,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc3986">https://www.rfc-editor.org/info/rfc3986</a>&gt;.
+
+   [<a id="ref-RFC5234">RFC5234</a>]  Crocker, D., Ed. and P. Overell, "Augmented BNF for Syntax
+              Specifications: ABNF", STD 68, <a href="./rfc5234">RFC 5234</a>,
+              DOI 10.17487/RFC5234, January 2008,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;.
+
+   [<a id="ref-RFC6350">RFC6350</a>]  Perreault, S., "vCard Format Specification", <a href="./rfc6350">RFC 6350</a>,
+              DOI 10.17487/RFC6350, August 2011,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc6350">https://www.rfc-editor.org/info/rfc6350</a>&gt;.
+
+   [<a id="ref-RFC8174">RFC8174</a>]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in <a href="./rfc2119">RFC</a>
+              <a href="./rfc2119">2119</a> Key Words", <a href="https://www.rfc-editor.org/bcp/bcp14">BCP 14</a>, <a href="./rfc8174">RFC 8174</a>, DOI 10.17487/RFC8174,
+              May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.
+
+<span class="h3"><a class="selflink" id="section-6.2" href="#section-6.2">6.2</a>.  Informative References</span>
+
+   [<a id="ref-RFC7483">RFC7483</a>]  Newton, A. and S. Hollenbeck, "JSON Responses for the
+              Registration Data Access Protocol (RDAP)", <a href="./rfc7483">RFC 7483</a>,
+              DOI 10.17487/RFC7483, March 2015,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7483">https://www.rfc-editor.org/info/rfc7483</a>&gt;.
+
+Acknowledgements
+
+   The author would like to acknowledge the following individuals for
+   their contributions to the development of this document: Rick
+   Wilhelm.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Hollenbeck &amp; Carney           Informational                     [Page 6]</span></pre>
+<hr class='noprint'/><!--NewPage--><pre class='newpage'><span id="page-7" ></span>
+<span class="grey"><a href="./rfc8605">RFC 8605</a>               ICANN RDAP vCard Extensions              May 2019</span>
+
+
+Authors' Addresses
+
+   Scott Hollenbeck
+   Verisign Labs
+   12061 Bluemont Way
+   Reston, VA  20190
+   United States of America
+
+   Email: shollenbeck@verisign.com
+   URI:   <a href="https://www.verisignlabs.com/">https://www.verisignlabs.com/</a>
+
+
+   Roger Carney
+   GoDaddy Inc.
+   14455 N. Hayden Rd. #219
+   Scottsdale, AZ  85260
+   United States of America
+
+   Email: rcarney@godaddy.com
+   URI:   <a href="http://www.godaddy.com">http://www.godaddy.com</a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hollenbeck &amp; Carney           Informational                     [Page 7]
+</pre>
+
+</body>
+</html>
+
