@@ -1,5 +1,7 @@
 import rdapValidator from "../lib/rdap-validator.js";
 
+rdapValidator.punycode = punycode;
+
 rdapValidator.setTestCompleteCallback(function() {
     const testedURL = new URL(rdapValidator.lastTestedURL);
     window.title = "RDAP Validator : " + testedURL.pathname.split("/").pop() + " : " + rdapValidator.lastTestedResponseType + " : " + rdapValidator.lastTestedServerType;
@@ -156,7 +158,7 @@ rdapValidator.setResultCallback(function(result, message, path, ref) {
 
         a.setAttribute("href", ref);
         a.setAttribute("target", "_blank");
-        a.setAttribute("title", "Open link to specification in a new window");
+        a.setAttribute("title", "Open link to specification in a new window.");
 
         a.style.setProperty("vertical-align", "super");
         a.style.setProperty("font-size", "small");
