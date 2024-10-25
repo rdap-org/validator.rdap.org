@@ -2,6 +2,13 @@ import rdapValidator from "../lib/rdap-validator.js";
 
 rdapValidator.punycode = punycode;
 
+const canReport = function() {
+    return (
+        "domain" === rdapValidator.lastTestedResponseType &&
+        ["gtld-registry", "gtld-registrar"].includes(rdapValidator.lastTestedServerType)
+    );
+};
+
 rdapValidator.setTestCompleteCallback(function() {
     const testedURL = new URL(rdapValidator.lastTestedURL);
     window.title = "RDAP Validator : " + testedURL.pathname.split("/").pop() + " : " + rdapValidator.lastTestedResponseType + " : " + rdapValidator.lastTestedServerType;
@@ -17,6 +24,10 @@ rdapValidator.setTestCompleteCallback(function() {
     window.history.pushState(null, window.title, url.href);
 
     document.getElementById("tree").appendChild(jsonToHTML(rdapValidator.lastTestedResponse, "response-$"));
+
+    if (canReport()) {
+        document.getElementById("report-button").disabled = false;
+    }
 });
 
 function jsonToHTML(value, path, objectIsReallyArray) {
@@ -224,6 +235,8 @@ Object.keys(rdapValidator.serverTypes).forEach(function(type) {
 
 const clickFunction = function() {
 
+    document.getElementById("report-button").disabled = true;
+
     document.getElementById("result-container").removeAttribute("hidden");
 
     const el = document.getElementById("results");
@@ -262,4 +275,120 @@ let doTest = false;
     }
 });
 
-if (doTest) document.getElementById("button").click();
+const button = document.getElementById("button");
+
+button.disabled = false;
+
+if (doTest) button.click();
+
+const sendEmailTo = function(entity) {
+    let lastTestedURL = rdapValidator.testedURL;
+
+    try {
+        lastTestedURL = rdapValidator.lastTestedResponse.links.filter(l => "self" == l.rel && "application/rdap+json" == l.type).shift().href;
+
+    } catch (e) {
+        console.log(e);
+
+    }
+
+    try {
+        const email = entity.vcardArray[1].filter(p => "EMAIL" === p[0].toUpperCase()).shift()[3];
+
+        const url = new URL("mailto:"+email);
+
+        let subject, body;
+
+        if (rdapValidator.errors < 1) {
+            subject = 'No issues with your RDAP server';
+            body = [
+                "Hey there, I tested your RDAP server using the RDAP Validator at this URL:",
+                "",
+                document.location.href,
+                "",
+                "And everything looks fine! Thanks for your care and attention.",
+            ];
+
+        } else {
+            subject = `I found ${self.errors} error(s) with your RDAP server`;
+
+            body = [
+                "***NOTE TO SENDER: PLEASE BE POLITE!***",
+                "",
+                "Hey there, I found an issue with your RDAP server using the RDAP Validator at this URL:",
+                "",
+                document.location.href,
+                "",
+                `Tested URL: ${lastTestedURL}`,
+                `Response Type: ${rdapValidator.responseTypes[rdapValidator.lastTestedResponseType]}`,
+                `Server Type: ${rdapValidator.serverTypes[rdapValidator.lastTestedServerType]}`,
+                "",
+                "List of errors:",
+                "",
+            ];
+
+            rdapValidator.log.forEach(function(msg) {
+                if (false === msg[0]) {
+                    body.push(`Error: ${msg[1]}`);
+                    if ("$" !== msg[2]) body.push(`JSON Path: ${msg[2]}`);
+                    if (msg[3]) body.push(`Reference: ${msg[3]}`);
+                    body.push("");
+                }
+            });
+
+            body.push("Server response:", "");
+
+            Object.keys(rdapValidator.lastTestedResponseHeaders).forEach(function(k) {
+                body.push(k + ": " + rdapValidator.lastTestedResponseHeaders[k]);
+            });
+            body.push("");
+            body = body.concat(JSON.stringify(rdapValidator.lastTestedResponse, null, "  ").split("\n"));
+        }
+
+        subject = escape(subject);
+        body = escape(body.join("\n"));
+
+        url.search = `?subject=${subject}&body=${body}`;
+
+        const iframe = document.createElement('iframe');
+        iframe.setAttribute('src', url.toString());
+        iframe.style.setProperty('display', 'none');
+
+        document.body.appendChild(iframe);
+
+    } catch (e) {
+        console.log(e);
+
+    }
+};
+
+document.getElementById("report-button").addEventListener("click", function() {
+    if (canReport()) {
+        if ("gtld-registry" === rdapValidator.lastTestedServerType) {
+            const tld =  rdapValidator.lastTestedObject.split(".").pop();
+            fetch(`https://rdap.iana.org/domain/${tld}`).then(
+                res => res.json().then(function (record) {
+                    try {
+                        const entity = record.entities.filter(e => e.roles.includes("technical")).shift();
+                        sendEmailTo(entity);
+
+                    } catch (e) {
+                        console.log(e);
+
+                    }
+                })
+            );
+        } else if ("gtld-registrar" === rdapValidator.lastTestedServerType) {
+            try {
+                const rar = rdapValidator.lastTestedResponse.entities.filter(e => e.roles.includes("registrar")).shift();
+                const gurid = rar.publicIds.filter(id => "IANA Registrar ID" === id.type).shift().identifier;
+
+                fetch(`https://registrars.rdap.org/entity/${gurid}-iana`).then(res => res.json().then(entity => sendEmailTo(entity)));
+
+            } catch (e) {
+                console.log(e);
+
+            }
+        }
+    }
+});
