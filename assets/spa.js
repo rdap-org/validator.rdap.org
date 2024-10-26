@@ -42,7 +42,7 @@ function jsonToHTML(value, path, objectIsReallyArray) {
             const k = Object.keys(value).at(i);
 
             const details = div.appendChild(document.createElement("details"));
-            details.open = true;
+            details.open = false;
 
             const summary = jsonToHTML(true === objectIsReallyArray ? parseInt(k) : k);
             summary.classList.add("json-key");
@@ -284,82 +284,80 @@ if (doTest) button.click();
 const sendEmailTo = function(entity) {
     let lastTestedURL = rdapValidator.testedURL;
 
+    let email;
+
     try {
         lastTestedURL = rdapValidator.lastTestedResponse.links.filter(l => "self" == l.rel && "application/rdap+json" == l.type).shift().href;
 
+        email = entity.vcardArray[1].filter(p => "EMAIL" === p[0].toUpperCase()).shift()[3];
+
     } catch (e) {
-        console.log(e);
+        alert(`Unable to extract URL and/or email address: ${e}`);
 
     }
 
-    try {
-        const email = entity.vcardArray[1].filter(p => "EMAIL" === p[0].toUpperCase()).shift()[3];
+    const url = new URL("mailto:"+email);
 
-        const url = new URL("mailto:"+email);
+    let subject, body;
 
-        let subject, body;
+    if (rdapValidator.errors < 1) {
+        subject = 'No issues with your RDAP server';
+        body = [
+            "Hey there, I tested your RDAP server using the RDAP Validator at this URL:",
+            "",
+            document.location.href,
+            "",
+            "And everything looks fine! Thanks for your care and attention.",
+            "",
+        ];
 
-        if (rdapValidator.errors < 1) {
-            subject = 'No issues with your RDAP server';
-            body = [
-                "Hey there, I tested your RDAP server using the RDAP Validator at this URL:",
-                "",
-                document.location.href,
-                "",
-                "And everything looks fine! Thanks for your care and attention.",
-            ];
+    } else {
+        subject = `I found ${self.errors} error(s) with your RDAP server`;
 
-        } else {
-            subject = `I found ${self.errors} error(s) with your RDAP server`;
+        body = [
+            "***NOTE TO SENDER: PLEASE BE POLITE!***",
+            "",
+            "Hey there, I found an issue with your RDAP server using the RDAP Validator at this URL:",
+            "",
+            document.location.href,
+            "",
+            `Tested URL: ${lastTestedURL}`,
+            `Response Type: ${rdapValidator.responseTypes[rdapValidator.lastTestedResponseType]}`,
+            `Server Type: ${rdapValidator.serverTypes[rdapValidator.lastTestedServerType]}`,
+            "",
+            "List of errors:",
+            "",
+        ];
 
-            body = [
-                "***NOTE TO SENDER: PLEASE BE POLITE!***",
-                "",
-                "Hey there, I found an issue with your RDAP server using the RDAP Validator at this URL:",
-                "",
-                document.location.href,
-                "",
-                `Tested URL: ${lastTestedURL}`,
-                `Response Type: ${rdapValidator.responseTypes[rdapValidator.lastTestedResponseType]}`,
-                `Server Type: ${rdapValidator.serverTypes[rdapValidator.lastTestedServerType]}`,
-                "",
-                "List of errors:",
-                "",
-            ];
+        rdapValidator.log.forEach(function(msg) {
+            if (false === msg[0]) {
+                body.push(`Error: ${msg[1]}`);
+                if ("$" !== msg[2]) body.push(`JSON Path: ${msg[2]}`);
+                if (msg[3]) body.push(`Reference: ${msg[3]}`);
+                body.push("");
+            }
+        });
 
-            rdapValidator.log.forEach(function(msg) {
-                if (false === msg[0]) {
-                    body.push(`Error: ${msg[1]}`);
-                    if ("$" !== msg[2]) body.push(`JSON Path: ${msg[2]}`);
-                    if (msg[3]) body.push(`Reference: ${msg[3]}`);
-                    body.push("");
-                }
-            });
+        body.push("Server response:", "");
 
-            body.push("Server response:", "");
-
-            Object.keys(rdapValidator.lastTestedResponseHeaders).forEach(function(k) {
-                body.push(k + ": " + rdapValidator.lastTestedResponseHeaders[k]);
-            });
-            body.push("");
-            body = body.concat(JSON.stringify(rdapValidator.lastTestedResponse, null, "  ").split("\n"));
-        }
-
-        subject = escape(subject);
-        body = escape(body.join("\n"));
-
-        url.search = `?subject=${subject}&body=${body}`;
-
-        const iframe = document.createElement('iframe');
-        iframe.setAttribute('src', url.toString());
-        iframe.style.setProperty('display', 'none');
-
-        document.body.appendChild(iframe);
-
-    } catch (e) {
-        console.log(e);
+        Object.keys(rdapValidator.lastTestedResponseHeaders).forEach(function(k) {
+            body.push(k + ": " + rdapValidator.lastTestedResponseHeaders[k]);
+        });
+        body.push("");
+        body = body.concat(JSON.stringify(rdapValidator.lastTestedResponse, null, "  ").split("\n"));
 
     }
+
+    subject = escape(subject);
+    body = escape(body.join("\n"));
+
+    url.search = `?subject=${subject}&body=${body}`;
+
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('src', url.toString());
+    iframe.style.setProperty('display', 'none');
+
+    document.body.appendChild(iframe);
 };
 
 document.getElementById("report-button").addEventListener("click", function() {
