@@ -31,7 +31,6 @@ function jsonToHTML(value, path, objectIsReallyArray) {
             const k = Object.keys(value).at(i);
 
             const details = div.appendChild(document.createElement("details"));
-            details.open = true;
 
             const summary = jsonToHTML(true === objectIsReallyArray ? parseInt(k) : k);
             summary.classList.add("json-key");
@@ -112,14 +111,13 @@ rdapValidator.setResultCallback(function(result, message, path, ref) {
     const li = document.getElementById("results").appendChild(document.createElement("li"));
     li.classList.add("list-group-item", "list-group-item-action");
     if (false === result) li.classList.add("list-group-item-danger");
+    li.title = path;
 
-    message = (null === result ? "ℹ️" : (true === result ? "✅" : "❌")) + message;
+    const icon = document.createElement('span').appendChild(document.createTextNode(null === result ? "ℹ️" : (true === result ? "✅" : "❌"))).parentNode;
+    icon.style.setProperty('font-size', 'xx-small');
 
-    const msgspan = document.createElement("span");
-    msgspan.appendChild(document.createTextNode(message));
-    msgspan.title = path;
-
-    li.appendChild(msgspan);
+    li.appendChild(icon);
+    li.appendChild(document.createTextNode(" " + message));
 
     if ("$" !== path) {
         li.addEventListener("click", function(event) {
@@ -143,7 +141,6 @@ rdapValidator.setResultCallback(function(result, message, path, ref) {
                 }
             }
             setTimeout(func, 100);
-
         });
     }
 
@@ -158,10 +155,10 @@ rdapValidator.setResultCallback(function(result, message, path, ref) {
 
         a.setAttribute("href", ref);
         a.setAttribute("target", "_blank");
-        a.setAttribute("title", "Open link to specification in a new window.");
+        a.setAttribute("title", "Open link to specification in a new tab.");
 
         a.style.setProperty("vertical-align", "super");
-        a.style.setProperty("font-size", "small");
+        a.style.setProperty("font-size", "xx-small");
     }
 });
 
@@ -200,11 +197,22 @@ function reveal(el) {
         }
 
         reveal(el.parentNode);
-    } else {
-        console.log("reveal() got something that wasn't an element");
-        console.log(el);
     }
 }
+
+function clickFunction() {
+
+    document.getElementById("result-container").removeAttribute("hidden");
+
+    Array.from(document.getElementById("results").childNodes).forEach((e) => e.parentNode.removeChild(e));
+    Array.from(document.getElementById("tree").childNodes).forEach((e) => e.parentNode.removeChild(e));
+
+    rdapValidator.testURL(
+        document.getElementById("url").value,
+        document.getElementById("response-type").value,
+        document.getElementById("server-type").value
+    );
+};
 
 const responseTypeSelect = document.getElementById("response-type");
 
@@ -221,21 +229,6 @@ Object.keys(rdapValidator.serverTypes).forEach(function(type) {
     option.setAttribute("value", type);
     option.appendChild(document.createTextNode(rdapValidator.serverTypes[type]));
 });
-
-const clickFunction = function() {
-
-    document.getElementById("result-container").removeAttribute("hidden");
-
-    const el = document.getElementById("results");
-
-    Array.from(el.childNodes).forEach((e) => e.parentNode.removeChild(e));
-
-    rdapValidator.testURL(
-        document.getElementById("url").value,
-        document.getElementById("response-type").value,
-        document.getElementById("server-type").value
-    );
-};
 
 document.getElementById("button").addEventListener("click", clickFunction);
 document.getElementById("url").addEventListener("keydown", function(event) {
