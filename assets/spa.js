@@ -9,7 +9,7 @@ rdapValidator.setTestCompleteCallback(function() {
     const url = document.createElement('a');
     url.href = window.location.href;
     url.search =    '?url=' + escape(rdapValidator.lastTestedURL) +
-                    '&type=' + escape(rdapValidator.lastTestedResponseType) +
+                    '&response-type=' + escape(rdapValidator.lastTestedResponseType) +
                     '&server-type=' + escape(rdapValidator.lastTestedServerType);
 
     if (document.getElementById("errors-only").checked) url.search += '&errors-only=1';
@@ -256,6 +256,7 @@ let doTest = false;
 
 ['url', 'response-type', 'server-type', 'errors-only'].forEach(function(p) {
     if (params.has(p)) {
+        console.log(`set ${p} to ` + params.get(p));
         if ('errors-only' == p) {
             document.getElementById(p).checked = true;
 
