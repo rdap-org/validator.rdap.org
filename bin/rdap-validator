@@ -129,5 +129,6 @@ if (opt.named.hasOwnProperty("help")) {
         url,
         responseType.replace("ip-network", "ip network"),
         serverType,
+        "cli",
     );
 }

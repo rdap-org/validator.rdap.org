@@ -157,7 +157,8 @@ function clickFunction() {
     rdapValidator.testURL(
         document.getElementById("url").value,
         document.getElementById("response-type").value,
-        document.getElementById("server-type").value
+        document.getElementById("server-type").value,
+        "web",
     );
 };
 
