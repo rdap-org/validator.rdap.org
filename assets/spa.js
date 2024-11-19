@@ -257,7 +257,6 @@ let doTest = false;
 
 ['url', 'response-type', 'server-type', 'errors-only'].forEach(function(p) {
     if (params.has(p)) {
-        console.log(`set ${p} to ` + params.get(p));
         if ('errors-only' == p) {
             document.getElementById(p).checked = true;
 
@@ -365,7 +364,7 @@ document.getElementById("report-button").addEventListener("click", function() {
                         sendEmailTo(entity);
 
                     } catch (e) {
-                        console.log(e);
+                        alert(`Unable to look up TLD's technical email address: ${e}`);
 
                     }
                 })
@@ -378,7 +377,7 @@ document.getElementById("report-button").addEventListener("click", function() {
                 fetch(`https://registrars.rdap.org/entity/${gurid}-iana`).then(res => res.json().then(entity => sendEmailTo(entity)));
 
             } catch (e) {
-                console.log(e);
+                alert(`Unable to find registrar's email address: ${e}`);
 
             }
         }
